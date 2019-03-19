@@ -174,7 +174,7 @@ class KELM:
         result_2 = np.dot(Kt, self.y_train)
         B = np.dot(result_1, result_2)
 
-        x = self.gaussian_kernel(data, self.y_train)
+        x = self.gaussian_kernel(data, self.x_train)
         y = np.dot(x, B)
 
         clasification = np.zeros([y.shape[0]])

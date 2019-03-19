@@ -3,12 +3,18 @@ from statsmodels.tsa import stattools
 from scipy.stats import skew, kurtosis
 
 class Features:
-    def magnitude(self, activity):
-        x = activity["x_axis"] * activity["x_axis"]
-        y = activity["y_axis"] * activity["y_axis"]
-        z = activity["z_axis"] * activity["z_axis"]
+    def convert(self, activity):
+        x = activity[1] * activity[1]
+        y = activity[2] * activity[2]
+        z = activity[3] * activity[3]
         m = x + y + z
-        return math.sqrt(m)
+        return {
+            "timestamp": activity[0],
+            "x_axis": activity[1],
+            "y_axis": activity[2],
+            "z_axis": activity[3],
+            "magnitude": math.sqrt(m)
+        }
 
     def jitter(self, axis, start, end):
         j = float(0)

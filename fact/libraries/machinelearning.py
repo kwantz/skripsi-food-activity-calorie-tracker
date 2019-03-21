@@ -8,37 +8,27 @@ class ELM:
 
     Attributes
     ----------
-    x_train : ndarray
-        features needed for the training process
-    y_train : ndarray
-        classification label for each features
+    B : ndarray
+        the output weights from elm formula
     hidden_input : ndarray
         single hidden layer feedforward neural networks where
         the hidden nodes can be any piecewise nonlinear function
+    hidden_unit : int
+        hidden unit size needed
+    classes : int
+        the size of classes listed
 
     Parameters
     ----------
-    dataset : ndarray
-        list of features you want to train
-    classes : ndarray
-        list of labels available
+    classes : int
+        change the classes needed
+    hidden_unit : int (optional)
+        change the hidden unit size needed
     """
 
-    def __init__(self, dataset, classes):
-        labels = dataset[:, 0]
-        features = dataset[:, 1:]
-
-        feature_labels = np.zeros([labels.shape[0], classes.shape[0]])
-        for i in range(labels.shape[0]):
-            feature_labels[i][int(labels[i])] = 1
-
-        hidden_unit = 1000
-        feature_lenght = features.shape[1]
-        feature_hidden = np.random.normal(size=[feature_lenght, hidden_unit])
-
-        self.x_train = features
-        self.y_train = feature_labels
-        self.hidden_input = feature_hidden
+    def __init__(self, classes, hidden_unit=1000):
+        self.classes = classes
+        self.hidden_unit = hidden_unit
 
     def input_to_hidden(self, x):
         """
@@ -60,6 +50,59 @@ class ELM:
         X = np.maximum(X, 0, X)
         return X
 
+    def elm_formula(self, x, y):
+        """
+        Output the weight from formula
+        B = inv(Xt . X) . Xt . y
+
+        Parameters
+        ----------
+        x : ndarray
+            list of features you want to train
+        y : ndarray
+            list of labels available
+
+        Returns
+        -------
+        ndarray
+            the output weights
+        """
+
+        X = self.input_to_hidden(x)
+        Xt = np.transpose(X)
+
+        result_1 = np.linalg.pinv(np.dot(Xt, X))
+        result_2 = np.dot(Xt, y)
+        return np.dot(result_1, result_2)
+
+    def fit(self, x, y):
+        """
+        Build the training set (x, y).
+
+        Parameters
+        ----------
+        x : ndarray
+            list of features you want to train
+        y : ndarray
+            list of labels available
+
+        Returns
+        -------
+        ELM
+            return the class
+        """
+
+        feature_labels = np.zeros([y.shape[0], self.classes])
+        for i in range(y.shape[0]):
+            feature_labels[i][int(y[i])] = 1
+
+        feature_lenght = x.shape[1]
+        feature_hidden = np.random.normal(size=[feature_lenght, self.hidden_unit])
+
+        self.hidden_input = feature_hidden
+        self.B = self.elm_formula(x, feature_labels)
+        return self
+
     def predict(self, data):
         """
         Classify the data you want to test according
@@ -72,20 +115,13 @@ class ELM:
 
         Returns
         -------
-        list
+        ndarray
             list of classification results for each data
             in accordance with the feature label
         """
 
-        K = self.input_to_hidden(self.x_train)
-        Kt = np.transpose(K)
-
-        result_1 = np.linalg.pinv(np.dot(Kt, K))
-        result_2 = np.dot(Kt, self.y_train)
-        B = np.dot(result_1, result_2)
-
         x = self.input_to_hidden(data)
-        y = np.dot(x, B)
+        y = np.dot(x, self.B)
 
         clasification = np.zeros([y.shape[0]])
         for i in range(y.shape[0]):
@@ -103,31 +139,30 @@ class KELM:
     ----------
     x_train : ndarray
         features needed for the training process
-    y_train : ndarray
-        classification label for each features
+    B : ndarray
+        the output weights from kelm formula
+    gamma : int
+        the inverse of the radius of influence of samples
+        selected by the model
+    classes : int
+        the size of classes listed
 
     Parameters
     ----------
-    dataset : ndarray
-        list of features you want to train
-    classes : ndarray
-        list of labels available
+    classes : int
+        change the classes needed
+    gamma : int (optional)
+        change the gamma value
     """
 
-    def __init__(self, dataset, classes):
-        labels = dataset[:, 0]
-        features = dataset[:, 1:]
+    def __init__(self, classes, gamma = 2 ** 10):
+        self.classes = classes
+        self.gamma = gamma
 
-        feature_labels = np.zeros([labels.shape[0], classes.shape[0]])
-        for i in range(labels.shape[0]):
-            feature_labels[i][int(labels[i])] = 1
-
-        self.x_train = features
-        self.y_train = feature_labels
-
-    def gaussian_kernel(self, a, b, gamma = 2 ** 10):
+    def gaussian_kernel(self, a, b):
         """
         The kernel matrix which needs to construct on the entire data
+        from formula exp(- ||xi - xj|| ^ 2 / σ)
 
         Parameters
         ----------
@@ -135,8 +170,6 @@ class KELM:
             first matrix
         b : ndarray
             second matrix
-        gamma : int (optional)
-            size of gamma, determines the reach of a single training instance
 
         Returns
         -------
@@ -147,8 +180,58 @@ class KELM:
         c = np.zeros([a.shape[0], b.shape[0]])
         for i in range(a.shape[0]):
             for j in range(b.shape[0]):
-                c[i,j] = exp(-(1 / gamma) * np.linalg.norm(a[i]-b[j]) ** 2)
+                c[i,j] = exp(-(1 / self.gamma) * np.linalg.norm(a[i]-b[j]) ** 2)
         return c
+
+    def kelm_formula(self, x, y):
+        """
+        Output the weight from formula
+        B = inv(Kt . K) . Kt . y
+
+        Parameters
+        ----------
+        x : ndarray
+            list of features you want to train
+        y : ndarray
+            list of labels available
+
+        Returns
+        -------
+        ndarray
+            the output weights
+        """
+
+        K = self.gaussian_kernel(x, x)
+        Kt = np.transpose(K)
+
+        result_1 = np.linalg.pinv(np.dot(Kt, K))
+        result_2 = np.dot(Kt, y)
+        return np.dot(result_1, result_2)
+
+    def fit(self, x , y):
+        """
+        Build the training set (x, y).
+
+        Parameters
+        ----------
+        x : ndarray
+            list of features you want to train
+        y : ndarray
+            list of labels available
+
+        Returns
+        -------
+        ELM
+            return the class
+        """
+
+        feature_labels = np.zeros([y.shape[0], self.classes])
+        for i in range(y.shape[0]):
+            feature_labels[i][int(y[i])] = 1
+
+        self.x_train = x
+        self.B = self.kelm_formula(x, feature_labels)
+        return self
 
     def predict(self, data):
         """
@@ -162,20 +245,13 @@ class KELM:
 
         Returns
         -------
-        list
+        ndarray
             list of classification results for each data
             in accordance with the feature label
         """
 
-        K = self.gaussian_kernel(self.x_train, self.x_train)
-        Kt = np.transpose(K)
-
-        result_1 = np.linalg.pinv(np.dot(Kt, K))
-        result_2 = np.dot(Kt, self.y_train)
-        B = np.dot(result_1, result_2)
-
         x = self.gaussian_kernel(data, self.x_train)
-        y = np.dot(x, B)
+        y = np.dot(x, self.B)
 
         clasification = np.zeros([y.shape[0]])
         for i in range(y.shape[0]):
@@ -193,40 +269,34 @@ class RKELM:
     ----------
     x_train : ndarray
         features needed for the training process
-    y_train : ndarray
-        classification label for each features
-    x_train_small : ndarray
-        a small random features from the original data (10%)
+    B : ndarray
+        the output weights from kelm formula
+    _lambda : int
+        size of lambda, add a positive value to the diagonal of kernel
+        (according to the ridge regression theory)
+    gamma : int
+        the inverse of the radius of influence of samples
+        selected by the model
 
     Parameters
     ----------
-    dataset : ndarray
-        list of features you want to train
-    classes : ndarray
-        list of labels available
+    classes : int
+        change the classes needed
+    _lambda : int (optional)
+        change the _lambda value
+    gamma : int (optional)
+        change the gamma value
     """
 
-    def __init__(self, dataset, classes):
-        labels = dataset[:, 0]
-        features = dataset[:, 1:]
+    def __init__(self, classes, _lambda = 2 ** 30, gamma = 2 ** 10):
+        self.classes = classes
+        self._lambda = _lambda
+        self.gamma = gamma
 
-        feature_labels = np.zeros([labels.shape[0], classes.shape[0]])
-        for i in range(labels.shape[0]):
-            feature_labels[i][int(labels[i])] = 1
-
-        feature_small_size = floor(features.shape[0] / 10)
-        feature_small = np.zeros([feature_small_size, features.shape[1]])
-        for i in range(feature_small_size):
-            idx = (i * 10) % features.shape[0]
-            feature_small[i] = features[idx]
-
-        self.x_train = features
-        self.y_train = feature_labels
-        self.x_train_small = feature_small
-
-    def gaussian_kernel(self, a, b, gamma = 2 ** 10):
+    def gaussian_kernel(self, a, b):
         """
         The kernel matrix which needs to construct on the entire data
+        from formula exp(- ||xi - xj|| ^ 2 / σ)
 
         Parameters
         ----------
@@ -234,8 +304,6 @@ class RKELM:
             first matrix
         b : ndarray
             second matrix
-        gamma : int (optional)
-            size of gamma, determines the reach of a single training instance
 
         Returns
         -------
@@ -246,10 +314,68 @@ class RKELM:
         c = np.zeros([a.shape[0], b.shape[0]])
         for i in range(a.shape[0]):
             for j in range(b.shape[0]):
-                c[i,j] = exp(-(1 / gamma) * np.linalg.norm(a[i]-b[j]) ** 2)
+                c[i,j] = exp(-(1 / self.gamma) * np.linalg.norm(a[i]-b[j]) ** 2)
         return c
 
-    def predict(self, data, _lambda = 2 ** 30):
+    def rkelm_formula(self, x, x_small, y):
+        """
+        Output the weight from formula
+        B = inv((1 / λ) + (Kt . K)) . Kt . y
+
+        Parameters
+        ----------
+        x : ndarray
+            list of features you want to train
+        x_small : ndarray
+            a small random features from the original data (10%)
+        y : ndarray
+            list of labels available
+
+        Returns
+        -------
+        ndarray
+            the output weights
+        """
+
+        K = self.gaussian_kernel(x, x_small)
+        Kt = np.transpose(K)
+
+        result_1 = np.linalg.pinv((1 / self._lambda) + np.dot(Kt, K))
+        result_2 = np.dot(Kt, y)
+        return np.dot(result_1, result_2)
+
+    def fit(self, x, y):
+        """
+        Build the training set (x, y).
+
+        Parameters
+        ----------
+        x : ndarray
+            list of features you want to train
+        y : ndarray
+            list of labels available
+
+        Returns
+        -------
+        ELM
+            return the class
+        """
+
+        feature_labels = np.zeros([y.shape[0], self.classes])
+        for i in range(y.shape[0]):
+            feature_labels[i][int(y[i])] = 1
+
+        feature_small_size = floor(x.shape[0] / 10)
+        feature_small = np.zeros([feature_small_size, x.shape[1]])
+        for i in range(feature_small_size):
+            idx = (i * 10) % x.shape[0]
+            feature_small[i] = x[idx]
+
+        self.x_train = feature_small
+        self.B = self.rkelm_formula(x, feature_small, feature_labels)
+        return self
+
+    def predict(self, data):
         """
         Classify the data you want to test according
         to the data you have trained
@@ -264,20 +390,12 @@ class RKELM:
 
         Returns
         -------
-        list
+        ndarray
             list of classification results for each data
             in accordance with the feature label
         """
-
-        K = self.gaussian_kernel(self.x_train, self.x_train_small)
-        Kt = np.transpose(K)
-
-        result_1 = np.linalg.pinv((1 / _lambda) + np.dot(Kt, K))
-        result_2 = np.dot(Kt, self.y_train)
-        B = np.dot(result_1, result_2)
-
-        x = self.gaussian_kernel(data, self.x_train_small)
-        y = np.dot(x, B)
+        x = self.gaussian_kernel(data, self.x_train)
+        y = np.dot(x, self.B)
 
         clasification = np.zeros([y.shape[0]])
         for i in range(y.shape[0]):

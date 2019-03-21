@@ -78,11 +78,8 @@ def get_train_features():
 def get_train_labels():
     dataset = []
 
-    dataset_label = DatasetPersonalLabel.objects.all()
+    dataset_label = DatasetPersonalLabel.objects.order_by('id')
     for data in dataset_label:
-        dataset.append([
-            data.id,
-            data.name
-        ])
+        dataset.append(data.name)
 
     return np.array(dataset)

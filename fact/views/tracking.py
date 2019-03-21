@@ -1,3 +1,4 @@
+import time
 import json
 import numpy as np
 import pandas as pd
@@ -19,19 +20,49 @@ def tracking_view(request):
         raw_data = json_request["raw_data"]
         algorithm = json_request["algorithm"].lower()
 
+        train_label = get_train_labels()
+        train_feature = get_train_features()
+
         data_test = convert_raw_data_to_data_test(raw_data)
-        clasification = choose_clasification(algorithm)
+
+        start_training_time = time.time()
+        clasification = choose_clasification(train_label, train_feature, algorithm)
+        end_training_time = time.time()
 
         if clasification is None:
             return JsonResponse({"message": "Invalid Algorithm"})
 
-        result = list(clasification.predict(data_test))
+        start_testing_time = time.time()
+        predict = list(clasification.predict(data_test))
+        end_testing_time = time.time()
+
+        dict = {}
+        predict.sort()
+        for i in range(len(predict)):
+            key = train_label[int(predict[i])]
+            if key in dict:
+                dict[key] += 1
+            else:
+                dict[key] = 1
+
+        keys = list(dict.keys())
+        print(keys)
+        clasification_results = []
+        for i in range(len(keys)):
+            clasification_results.append({
+                "label": keys[i],
+                "value": dict[keys[i]]
+            })
 
         return JsonResponse({
-            "results": json.dumps(result)
+            "results": {
+                "training_time": end_training_time - start_training_time,
+                "testing_time": end_testing_time - start_testing_time,
+                "clasification": clasification_results
+            }
         })
 
-    return JsonResponse({ "message": "Invalid Method" })
+    return JsonResponse({"message": "Invalid Method"})
 
 
 def convert_raw_data_to_data_test(raw_data):
@@ -44,33 +75,27 @@ def convert_raw_data_to_data_test(raw_data):
     return np.array(list(features.extract(raw_data)))
 
 
-def choose_clasification(algorithm = 'rkelm'):
-    train_label = get_train_labels()
-    train_feature = get_train_features()
-
+def choose_clasification(train_label, train_feature, algorithm='rkelm'):
     labels = train_feature[:, 0]
     features = train_feature[:, 1:]
     clasification = None
 
     if algorithm == 'elm':
-        clasification = ELM(train_feature, train_label)
+        clasification = ELM(train_label.shape[0]).fit(features, labels)
 
     elif algorithm == 'kelm':
-        clasification = KELM(train_feature, train_label)
+        clasification = KELM(train_label.shape[0]).fit(features, labels)
 
     elif algorithm == 'rkelm':
-        clasification = RKELM(train_feature, train_label)
+        clasification = RKELM(train_label.shape[0]).fit(features, labels)
 
     elif algorithm == 'rf':
-        machine_learning = RandomForestClassifier()
-        clasification = machine_learning.fit(features, labels)
+        clasification = RandomForestClassifier().fit(features, labels)
 
     elif algorithm == 'svm':
-        machine_learning = SVC()
-        clasification = machine_learning.fit(features, labels)
+        clasification = SVC(gamma=1 / (2 ** 15)).fit(features, labels)
 
     elif algorithm == 'knn':
-        machine_learning = KNeighborsClassifier()
-        clasification = machine_learning.fit(features, labels)
+        clasification = KNeighborsClassifier().fit(features, labels)
 
     return clasification

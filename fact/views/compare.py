@@ -9,19 +9,25 @@ from fact.libraries.dataset import get_train_features, get_train_labels
 from fact.libraries.features import Features
 from fact.libraries.machinelearning import ELM, KELM, RKELM
 from django.http import JsonResponse
+from fact.libraries.jwt import JWT
 from django.views.decorators.csrf import csrf_exempt
 
-
 @csrf_exempt
-def tracking_view(request):
-    if request.method == 'POST':
+def compare_api(request):
+    bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
+    user = JWT().decode(token)
+
+    if user is None:
+        return JsonResponse({"message": "Unauthorized"})
+
+    if request.method == "POST":
         json_request = json.loads(request.body)
 
         raw_data = json_request["raw_data"]
         algorithm = json_request["algorithm"].lower()
 
         train_label = get_train_labels()
-        train_feature = get_train_features()
+        train_feature = get_train_features(user.id)
 
         data_test = convert_raw_data_to_data_test(raw_data)
 
@@ -75,27 +81,27 @@ def convert_raw_data_to_data_test(raw_data):
     return np.array(list(features.extract(raw_data)))
 
 
-def choose_clasification(train_label, train_feature, algorithm='rkelm'):
+def choose_clasification(train_label, train_feature, algorithm="rkelm"):
     labels = train_feature[:, 0]
     features = train_feature[:, 1:]
     clasification = None
 
-    if algorithm == 'elm':
+    if algorithm == "elm":
         clasification = ELM(train_label.shape[0]).fit(features, labels)
 
-    elif algorithm == 'kelm':
+    elif algorithm == "kelm":
         clasification = KELM(train_label.shape[0]).fit(features, labels)
 
-    elif algorithm == 'rkelm':
+    elif algorithm == "rkelm":
         clasification = RKELM(train_label.shape[0]).fit(features, labels)
 
-    elif algorithm == 'rf':
+    elif algorithm == "rf":
         clasification = RandomForestClassifier().fit(features, labels)
 
-    elif algorithm == 'svm':
+    elif algorithm == "svm":
         clasification = SVC(gamma=1 / (2 ** 15)).fit(features, labels)
 
-    elif algorithm == 'knn':
+    elif algorithm == "knn":
         clasification = KNeighborsClassifier().fit(features, labels)
 
     return clasification

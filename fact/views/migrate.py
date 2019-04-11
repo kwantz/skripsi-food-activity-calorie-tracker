@@ -1,9 +1,290 @@
-from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
-from fact.models import DatasetCommon, DatasetPersonalLabel, ActivityFactor, Gender, User
+from fact.libraries.datetime import Datetime
+from fact.models import Activity, ActivityLabel, ActivityLevel, Gender, User, Role, Food, FoodCategory
+import bcrypt
+from django.utils.dateparse import parse_datetime
 
-def migrate_init(request):
+def migrate_api(request):
     try:
+        # Init table activity_level
+        list_data = ["Low", "Medium", "High"]
+        for data in list_data:
+            ActivityLevel.objects.create(name=data)
+
+        # Init table gender
+        list_data = ["Male", "Female"]
+        for data in list_data:
+            Gender.objects.create(name=data)
+
+        # Init table role
+        list_data = ["Admin", "User"]
+        for data in list_data:
+            Role.objects.create(name=data)
+
+        # Init table user
+        encrypt_password = bcrypt.hashpw("admin".encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+        user = User.objects.create(
+            name="Admin",
+            email="admin@admin.com",
+            password=encrypt_password,
+            weight=77,
+            height=175,
+            birth_year=1000,
+            role=Role.objects.get(id=1),
+            gender=Gender.objects.get(id=1),
+            activity_level=ActivityLevel.objects.get(id=2)
+        )
+
+        # Init table food_category
+        list_data = ["Beef", "Bread & Bakery", "Dairy & Eggs", "Drinks"]
+        for data in list_data:
+            FoodCategory.objects.create(name=data)
+
+        # Init table food
+        list_data = [
+            [0, "Breast brisket, no fat", 363, 44.6, 0, 19.1],
+            [0, "Breast brisket, with fat", 578, 35.3, 0, 47.3],
+            [0, "Beef shank, no fat", 302, 50.5, 0, 9.5],
+            [0, "Beef shank, with fat", 395, 46, 0, 22],
+            [0, "Flank steak", 291, 41.7, 0, 12.5],
+            [0, "Skirt steak", 174, 22.7, 0, 8.6],
+            [0, "Arm pot roast, no fat", 214, 34.7, 0, 7.4],
+            [0, "Arm pot roast, with fat", 302, 30.1, 0, 19.2],
+            [0, "Blade chuck roast, no fat", 263, 31.1, 0, 14.4],
+            [0, "Blade chuck roast, with fat", 363, 26.2, 0, 27.8],
+            [0, "Flat iron steak, no fat", 173, 22.2, 0, 8.6],
+            [0, "Flat iron steak, with fat", 184, 21.9, 0, 10],
+            [0, "Mock tender steak", 136, 22, 0, 4.6],
+            [0, "Shoulder pot roast, no fat", 147, 22.4, 0, 5.7],
+            [0, "Shoulder pot roast, with fat", 242, 24.2, 0, 15.4],
+            [0, "Shoulder steak, no fat", 161, 24.9, 0, 6],
+            [0, "Shoulder steak, with fat", 231, 22.3, 0, 15.1],
+            [0, "Ground beef patty", 357, 34.3, 0, 23.3],
+            [0, "Ground beef, 20% fat", 381, 25.8, 0, 30],
+            [0, "Ground beef, 30% fat", 270, 25.6, 0, 17.9],
+            [0, "Ground beef, 5% fat", 193, 29.2, 0, 7.6],
+            [0, "Meat loaf", 241, 23.9, 0, 15.4],
+            [0, "Bottom sirloin tri-tip roast, no fat", 312, 39.1, 0, 16.6],
+            [0, "Bottom sirloin tri-tip roast, with fat", 327, 38.5, 0, 18.5],
+            [0, "Bottom sirloin tri-tip steak", 213, 26.1, 0, 11.2],
+            [0, "Porterhouse steak, no fat", 179, 22.5, 0, 9.1],
+            [0, "Porterhouse steak, with fat", 280, 19.1, 0, 22],
+            [0, "T-bone steak, no fat", 161, 22.1, 0, 7.4],
+            [0, "T-bone steak, with fat", 210, 20.6, 0, 13.5],
+            [0, "Tenderloin steak, no fat", 333, 41.6, 0, 17.2],
+            [0, "Tenderloin steak, with fat", 498, 35.4, 0, 38.4],
+            [0, "Top loin steak, no fat", 284, 44, 0, 10.6],
+            [0, "Top loin steak, with fat", 224, 22.5, 0, 14.3],
+            [0, "Top sirloin steak, no fat", 267, 44.1, 0, 8.8],
+            [0, "Top sirloin steak, with fat", 365, 40.4, 0, 21.3],
+            [0, "Breakfast strips", 51, 3.5, 0.2, 3.9],
+            [0, "Corned beef", 175, 19, 0, 10.5],
+            [0, "Braised short ribs, no fat", 295, 30.8, 0, 18.1],
+            [0, "Braised short ribs, with fat", 471, 21.6, 0, 42],
+            [0, "Rib roast, no fat", 229, 27.3, 0, 12.5],
+            [0, "Rib roast, with fat", 358, 22.5, 0, 29],
+            [0, "Rib-eye steak", 484, 68.1, 0, 21.3],
+            [0, "Bottom round roast, no fat", 54, 8.6, 0, 1.9],
+            [0, "Bottom round roast, with fat", 247, 32.8, 0, 11.9],
+            [0, "Eye of round roast, no fat", 194, 34.2, 0, 5.4],
+            [0, "Eye of round roast, with fat", 250, 34, 0, 11.6],
+            [0, "Sirloin tip roast, no fat", 231, 35.9, 0, 8.6],
+            [0, "Sirloin tip roast, with fat", 351, 40.4, 0, 19.9],
+            [0, "Top round roast, no fat", 308, 54.2, 0, 8.4],
+            [0, "Top round roast, with fat", 372, 50.7, 0, 17.1],
+            [1, "Bagel", 146, 5.7, 28.8, 0.9],
+            [1, "Bagel, oat bran", 145, 6.1, 30.4, 0.7],
+            [1, "Bagel, cinnamon raisin", 156, 5.6, 31.5, 1],
+            [1, "Bread stick", 21, 0.6, 3.4, 0.5],
+            [1, "Brown rice cake", 35, 0.7, 7.3, 0.3],
+            [1, "Cheese cracker", 20, 0.4, 2.3, 1],
+            [1, "Chex mix", 200, 5.2, 30.6, 8.1],
+            [1, "Cracker", 29, 0.5, 3.5, 1.5],
+            [1, "Rice cake", 35, 0.6, 7.3, 0.4],
+            [1, "Saltines cracker", 21, 0.5, 3.5, 0.6],
+            [1, "Sandwich cracker with filling", 35, 0.8, 4.1, 1.7],
+            [1, "Standard cracker", 20, 0.3, 2.4, 1],
+            [1, "Toast cracker", 41, 1.4, 7.2, 0.7],
+            [1, "Wafer cracker", 37, 1.1, 8.8, 0.1],
+            [1, "Wheat cracker", 14, 0.3, 1.9, 0.6],
+            [1, "Whole wheat cracker", 18, 0.4, 2.7, 0.7],
+            [1, "Cheese croissant", 174, 3.9, 19.7, 8.8],
+            [1, "Croissant", 114, 2.3, 12.8, 5.9],
+            [1, "English muffin", 127, 5, 25.5, 1.1],
+            [1, "English muffin, whole wheat", 134, 5.8, 26.7, 1.4],
+            [1, "Strudel", 195, 2.3, 29.2, 8],
+            [1, "Boston brown bread", 88, 2.3, 19.5, 0.7],
+            [1, "Cracked wheat bread", 130, 4.3, 24.8, 1.9],
+            [1, "Irish soda bread", 226, 5.1, 43.7, 3.9],
+            [1, "Multi-grain bread", 69, 3.5, 11.3, 1.1],
+            [1, "Oat bread", 73, 2.3, 13.1, 1.2],
+            [1, "Oat bread, low calories", 48, 1.7, 10, 0.8],
+            [1, "Oat bread, whole grain", 71, 3.1, 11.9, 1.3],
+            [1, "Oat bread, whole grain, low calories", 46, 1.8, 9.5, 0.7],
+            [1, "Pumpernickel bread", 65, 2.3, 12.3, 0.8],
+            [1, "Rye bread", 83, 2.7, 15.5, 1.1],
+            [1, "Corn tortillas", 52, 1.4, 10.7, 0.7],
+            [1, "Croutons", 122, 3.6, 22.1, 2],
+            [1, "Dinner roll", 88, 3.1, 14.8, 1.8],
+            [1, "French roll", 105, 3.3, 19.1, 1.6],
+            [1, "Garlic bread", 186, 4.2, 20.8, 9.6],
+            [1, "Hamburger / hotdog roll", 120, 4.1, 21.3, 1.9],
+            [1, "Papadum bread", 148, 10.2, 23.9, 1.3],
+            [1, "Pita bread", 77, 2.5, 15.6, 0.3],
+            [1, "Pita bread, whole wheat", 74, 2.7, 15.4, 0.7],
+            [1, "Taco shells", 98, 1.5, 13.2, 4.4],
+            [1, "Toaster pastry", 206, 2.5, 34, 7.1],
+            [1, "Wheat tortilla", 94, 2.5, 15.4, 2.3],
+            [1, "Cornbread", 188, 4.3, 28.9, 6],
+            [1, "French bread", 185, 7.5, 36.1, 1.2],
+            [1, "French toast", 126, 4.4, 18.9, 3.6],
+            [1, "French toast, low fat", 149, 5, 16.3, 7],
+            [1, "Italian bread", 81, 2.6, 15, 1.1],
+            [1, "Wheat bread", 67, 2.7, 11.9, 0.9],
+            [1, "Wheat bread, low calories", 46, 2.1, 10, 0.5],
+            [1, "Wheat bread, whole wheat", 89, 3.2, 17.2, 1.2],
+            [2, "Butter, with salt", 108, 0.1, 0, 12.2],
+            [2, "Butter, without salt", 108, 0.1, 0, 12.1],
+            [2, "Shortening", 117, 0, 0, 13],
+            [2, "Soybean oil", 124, 0, 0, 14],
+            [2, "Blue cheese", 53, 3.2, 0.4, 4.3],
+            [2, "Brick cheese", 56, 3.5, 0.4, 4.5],
+            [2, "Brie cheese", 50, 3.1, 0.1, 4.2],
+            [2, "Brie cheese", 62, 3.9, 0, 5.2],
+            [2, "Camembert", 45, 3, 0.1, 3.6],
+            [2, "Cheddar cheese", 60, 3.7, 0.2, 5],
+            [2, "Cheese fondue", 34, 2.1, 0.6, 2],
+            [2, "Cream cheese", 52, 1.1, 0.4, 5.2],
+            [2, "Feta cheese", 40, 2.1, 0.6, 3.2],
+            [2, "Goat cheese", 55, 3.2, 0.4, 4.5],
+            [2, "Mozzarella cheese", 38, 3.6, 0.4, 2.4],
+            [2, "Muenster cheese", 55, 3.5, 0.2, 4.5],
+            [2, "Parmesan cheese", 59, 5.4, 0.5, 3.9],
+            [2, "Ricotta cheese", 432, 27.9, 7.5, 32.2],
+            [2, "Roquefort cheese", 314, 18.3, 1.7, 26],
+            [2, "Cottage cheese", 15, 1.9, 0.4, 0.7],
+            [2, "Cottage cheese, low fat", 14, 2.1, 0.5, 0.3],
+            [2, "Coffee / table cream", 29, 0.4, 0.5, 2.9],
+            [2, "Cream, fluid", 44, 0.3, 0.4, 4.6],
+            [2, "Cream, whipped", 48, 0.3, 0.4, 5.2],
+            [2, "Sour cream", 20, 2.9, 4.3, 12],
+            [2, "Sour cream, fat free", 74, 3.1, 15.6, 0],
+            [2, "Sour cream, light", 20, 0.5, 1.1, 1.6],
+            [2, "Boiled egg", 78, 6.8, 0.2, 5.3],
+            [2, "Egg omelet", 353, 23.8, 1.5, 27.1],
+            [2, "Fried egg", 89, 6.1, 0.2, 7.1],
+            [2, "Poached egg", 71, 6.3, 0.4, 5],
+            [2, "Raw egg", 80, 7, 0.4, 5.6],
+            [2, "Raw egg white", 17, 3.6, 0.2, 0.1],
+            [2, "Raw egg yolk", 54, 2.7, 0.6, 4.5],
+            [2, "Scrambled eggs", 92, 6.1, 1.2, 6.7],
+            [2, "Margarine (20% fat)", 25, 0, 0.1, 2.7],
+            [2, "Margarine (37% fat)", 51, 0.1, 0.1, 5.7],
+            [2, "Margarine (70% fat)", 87, 0, 0.2, 9.8],
+            [2, "Margarine, soybean", 108, 0.1, 0.1, 12.1],
+            [2, "Milk, 3.25%", 142, 7.6, 10.7, 7.7],
+            [2, "Milk, dry", 60, 3.2, 4.6, 3.2],
+            [2, "Milk, low fat (1%)", 113, 9.3, 13, 2.8],
+            [2, "Milk, nonfat", 97, 10.8, 15.7, 0.2],
+            [2, "Milk, red fat (2%)", 132, 9.3, 13, 4.7],
+            [2, "Semi skimmed milk, 1.5%", 113, 8.4, 11.5, 3.8],
+            [2, "Fruit yogurt (2%)", 316, 11.2, 51, 6.8],
+            [2, "Light yogurt", 127, 13, 17.4, 0.4],
+            [2, "Plain yogurt", 138, 7.9, 10.7, 7.5],
+            [2, "Vanilla yogurt", 193, 11.2, 31.3, 2.8],
+            [3, "Beer", 164, 1,8, 14,4, 0],
+            [3, "Cooking wine", 21, 0, 7,4, 0],
+            [3, "Dessert wine", 170, 0, 14,4, 0],
+            [3, "Light beer", 103, 0,8, 5,8, 0],
+            [3, "Light wine", 73, 0,1, 1,7, 0],
+            [3, "Red wine (SE)", 118, 0, 2,9, 0],
+            [3, "Root beer", 202, 0, 52,3, 0],
+            [3, "White wine", 103, 0, 1, 0],
+            [3, "Wine, no alcohol", 9, 0,8, 1,7, 0],
+            [3, "Chocolate soda", 207, 0, 52,6, 0],
+            [3, "Club soda", 0, 0, 0, 0],
+            [3, "Cola", 155, 0, 38,9, 0],
+            [3, "Cream soda", 252, 0, 65,7, 0],
+            [3, "Ginger ale", 166, 0, 42,8, 0],
+            [3, "Grape soda", 160, 0, 41,7, 0],
+            [3, "Lemon-lime soda", 148, 0,2, 37,4, 0,1],
+            [3, "Orange soda", 238, 0, 61, 0],
+            [3, "Pepper-type soda", 201, 0, 51,1, 0,5],
+            [3, "Soda, no sugar", 9, 0,9, 1,4, 0],
+            [3, "Tonic water", 114, 0, 29,6, 0],
+            [3, "Brewed coffee", 2, 0,2, 0,2, 0],
+            [3, "Brewed tea", 4, 0, 1, 0],
+            [3, "Café Au lait", 105, 7, 10,5, 3,5],
+            [3, "Caffe Latte", 40, 2, 3, 2],
+            [3, "Cappuccino", 88, 7, 8,4, 3,5],
+            [3, "Coffee powder", 53, 2,2, 10,6, 0,1],
+            [3, "Espresso", 3, 0, 0,5, 0,1],
+            [3, "Ice tea", 86, 0, 21,8, 0],
+            [3, "Instant coffee", 0, 0, 0, 0],
+            [3, "Instant tea", 5, 0, 1,1, 0],
+            [3, "Energy drink", 82, 0,6, 27,3, 0,2],
+            [3, "Energy drink, light", 9, 0,6, 1,8, 0,2],
+            [3, "Sports drink", 135, 0, 33,8, 0,5],
+            [3, "Sports drink, light", 26, 0, 7,2, 0],
+            [3, "Chocolate milk", 204, 7,8, 28,6, 7,8],
+            [3, "Apple juice (unsweetened)", 113, 0,1, 28, 0,3],
+            [3, "Blackberry juice", 91, 0,7, 18,7, 1,4],
+            [3, "Carrot juice", 96, 2,3, 22,3, 0,4],
+            [3, "Cranberry juice", 110, 1, 28,8, 0,2],
+            [3, "Grape juice", 200, 0, 50,9, 0],
+            [3, "Grapefruit juice", 76, 1, 18, 0,2],
+            [3, "Orange grapefruit juice", 103, 1,4, 24,7, 0,2],
+            [3, "Orange juice", 7, 0,1, 1,5, 0],
+            [3, "Pineapple & orange juice", 120, 3,1, 28,3, 0],
+            [3, "Pineapple juice", 127, 0,9, 30,9, 0,3],
+            [3, "Tomato juice", 55, 1,9, 10,1, 0,2],
+            [3, "Vegetables & fruit juices", 70, 0,1, 17,9, 0],
+            [3, "Coffee liqueur", 161, 0, 24,4, 0],
+            [3, "Crème de menthe", 186, 0, 10,5, 0,1],
+            [3, "Daiquiri cocktail", 112, 0, 4,2, 0],
+            [3, "Gin", 17, 0, 3,9, 0],
+            [3, "Pina colada", 245, 1,4, 50,8, 28,2],
+            [3, "Rum", 80, 0, 3,9, 0],
+            [3, "Sake (rice wine)", 176, 0, 1,5, 0],
+            [3, "Tequila sunrise", 232, 0,6, 23,8, 0,2],
+            [3, "Vodka", 93, 0, 3,9, 0],
+            [3, "Whiskey", 105, 0, 0, 0],
+            [3, "Whiskey sour drink", 439, 0, 21,7, 0],
+            [3, "Chocolate milk", 199, 7,6, 24,8, 8,1],
+            [3, "Chocolate milk, (1% fat)", 149, 7,6, 24,6, 2,4],
+            [3, "Chocolate milk, (2% fat)", 182, 7,2, 29,1, 4,6],
+            [3, "Chocolate milk, homemade", 154, 7, 21,3, 4,7],
+            [3, "Chocolate milkshake", 357, 9,1, 63,4, 8,1],
+            [3, "Strawberry shake", 319, 9,5, 53,3, 7,9],
+            [3, "Unsweetened almond milk", 29, 1, 0, 2,5],
+            [3, "Vanilla shake", 46, 2,4, 13,9, 4,6],
+            [3, "Eggnog", 54, 1,5, 5,4, 3],
+            [3, "Fruit punch", 19, 0, 4,8, 0],
+            [3, "Lemonade", 98, 0, 25,7, 0],
+            [3, "Lemonade, no sugar", 7, 0,1, 1,6, 0],
+            [3, "Malt beverage", 185, 1,1, 40,3, 0,6],
+            [3, "Bottled water", 0, 0, 0, 0],
+            [3, "Tapped water", 0, 0, 0, 0]
+        ]
+        for data in list_data:
+            Food.objects.create(
+                user=User.objects.get(id=1),
+                food_category=FoodCategory.objects.get(id=data[0]+1),
+                name=data[1],
+                calorie=data[2],
+                protein=data[3],
+                carbohydrate=data[4],
+                fat=data[5]
+            )
+
+        # Init table dataset_personal_label
+        list_data = ["STANDING", "WALKING", "RUNNING", "STAIRS", "ON_TRAIN"]
+        for data in list_data:
+            ActivityLabel.objects.create(
+                name=data,
+                calorie=0
+            )
+
         # Init table dataset_common
         list_data = [
             [0, 0.0, 0.0, 0.24989480049999999, 0.01015862876539376, 0.00010319773839308553, 0.22565351, 0.27832594999999999,
@@ -3505,104 +3786,73 @@ def migrate_init(request):
              0.026760354872538129, 9.3377489404826264, 9.9956296506995237, 0.0031103183647639798, 0.29843050900324686,
              0.00026225147775087371, 0.0071194791553835174, -0.48573203376873336, -0.49785943696251733, 0.16194180366751312]
         ]
+
+        requested_at = parse_datetime("2019-01-01 00:00:00+0700")
+
         for data in list_data:
-            dataset = DatasetCommon(
-                label = data[0],
-                x_axis_jitter = data[1],
-                x_axis_mean_crossing_rate = data[2],
-                x_axis_mean = data[3],
-                x_axis_std = data[4],
-                x_axis_var = data[5],
-                x_axis_min = data[6],
-                x_axis_max = data[7],
-                x_axis_acf_mean = data[8],
-                x_axis_acf_std = data[9],
-                x_axis_acv_mean = data[10],
-                x_axis_acv_std = data[11],
-                x_axis_skew = data[12],
-                x_axis_kurtosis = data[13],
-                x_axis_sqrt = data[14],
-                y_axis_jitter = data[15],
-                y_axis_mean_crossing_rate = data[16],
-                y_axis_mean = data[17],
-                y_axis_std = data[18],
-                y_axis_var = data[19],
-                y_axis_min = data[20],
-                y_axis_max = data[21],
-                y_axis_acf_mean = data[22],
-                y_axis_acf_std = data[23],
-                y_axis_acv_mean = data[24],
-                y_axis_acv_std = data[25],
-                y_axis_skew = data[26],
-                y_axis_kurtosis = data[27],
-                y_axis_sqrt = data[28],
-                z_axis_jitter = data[29],
-                z_axis_mean_crossing_rate = data[30],
-                z_axis_mean = data[31],
-                z_axis_std = data[32],
-                z_axis_var = data[33],
-                z_axis_min = data[34],
-                z_axis_max = data[35],
-                z_axis_acf_mean = data[36],
-                z_axis_acf_std = data[37],
-                z_axis_acv_mean = data[38],
-                z_axis_acv_std = data[39],
-                z_axis_skew = data[40],
-                z_axis_kurtosis = data[41],
-                z_axis_sqrt = data[42],
-                magnitude_jitter = data[43],
-                magnitude_mean_crossing_rate = data[44],
-                magnitude_mean = data[45],
-                magnitude_std = data[46],
-                magnitude_var = data[47],
-                magnitude_min = data[48],
-                magnitude_max = data[49],
-                magnitude_acf_mean = data[50],
-                magnitude_acf_std = data[51],
-                magnitude_acv_mean = data[52],
-                magnitude_acv_std = data[53],
-                magnitude_skew = data[54],
-                magnitude_kurtosis = data[55],
-                magnitude_sqrt = data[56]
+            Activity.objects.create(
+                user=User.objects.get(id=1),
+                label=ActivityLabel.objects.get(id=data[0]+1),
+                x_axis_jitter=data[1],
+                x_axis_mean_crossing_rate=data[2],
+                x_axis_mean=data[3],
+                x_axis_std=data[4],
+                x_axis_var=data[5],
+                x_axis_min=data[6],
+                x_axis_max=data[7],
+                x_axis_acf_mean=data[8],
+                x_axis_acf_std=data[9],
+                x_axis_acv_mean=data[10],
+                x_axis_acv_std=data[11],
+                x_axis_skew=data[12],
+                x_axis_kurtosis=data[13],
+                x_axis_sqrt=data[14],
+                y_axis_jitter=data[15],
+                y_axis_mean_crossing_rate=data[16],
+                y_axis_mean=data[17],
+                y_axis_std=data[18],
+                y_axis_var=data[19],
+                y_axis_min=data[20],
+                y_axis_max=data[21],
+                y_axis_acf_mean=data[22],
+                y_axis_acf_std=data[23],
+                y_axis_acv_mean=data[24],
+                y_axis_acv_std=data[25],
+                y_axis_skew=data[26],
+                y_axis_kurtosis=data[27],
+                y_axis_sqrt=data[28],
+                z_axis_jitter=data[29],
+                z_axis_mean_crossing_rate=data[30],
+                z_axis_mean=data[31],
+                z_axis_std=data[32],
+                z_axis_var=data[33],
+                z_axis_min=data[34],
+                z_axis_max=data[35],
+                z_axis_acf_mean=data[36],
+                z_axis_acf_std=data[37],
+                z_axis_acv_mean=data[38],
+                z_axis_acv_std=data[39],
+                z_axis_skew=data[40],
+                z_axis_kurtosis=data[41],
+                z_axis_sqrt=data[42],
+                magnitude_jitter=data[43],
+                magnitude_mean_crossing_rate=data[44],
+                magnitude_mean=data[45],
+                magnitude_std=data[46],
+                magnitude_var=data[47],
+                magnitude_min=data[48],
+                magnitude_max=data[49],
+                magnitude_acf_mean=data[50],
+                magnitude_acf_std=data[51],
+                magnitude_acv_mean=data[52],
+                magnitude_acv_std=data[53],
+                magnitude_skew=data[54],
+                magnitude_kurtosis=data[55],
+                magnitude_sqrt=data[56],
+                requested_at=requested_at
             )
-            dataset.save()
 
-        # Init table activity_factor
-        list_data = ["Low", "Medium", "High"]
-        for data in list_data:
-            activity_factor = ActivityFactor(name=data)
-            activity_factor.save()
-
-        # Init table gender
-        list_data = ["Male", "Female"]
-        for data in list_data:
-            gender = Gender(name=data)
-            gender.save()
-
-        # Init table user
-        user = User(
-            name="Admin",
-            email="admin@admin.com",
-            password=make_password("admin"),
-            weight=77,
-            height=175,
-            gender=Gender.objects.get(pk=1),
-            activity_factor=ActivityFactor.objects.get(pk=2)
-        )
-        user.save()
-
-        # Init table dataset_personal_label
-        list_data = ["STANDING", "WALKING", "RUNNING", "STAIRS", "ON_TRAIN"]
-        for data in list_data:
-            dataset_personal_label = DatasetPersonalLabel(
-                name=data,
-                user=User.objects.get(pk=1)
-            )
-            dataset_personal_label.save()
-
-        return JsonResponse({
-            "message": "Initialize Complete"
-        })
+        return JsonResponse({"message": "Initialize Complete"})
 
     except Exception as error:
         return JsonResponse({ "message": "Oops... You have error. " + str(error) })

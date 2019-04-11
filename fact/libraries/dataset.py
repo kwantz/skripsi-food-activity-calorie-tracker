@@ -1,9 +1,10 @@
 import numpy as np
-from fact.models import DatasetCommon, DatasetPersonal, DatasetPersonalLabel
+from fact.models import Activity, ActivityLabel
+from django.db.models import Q
 
 def extract_data_to_feature(data):
     return [
-        data.label,
+        data.label.id - 1,
         data.x_axis_jitter,
         data.x_axis_mean_crossing_rate,
         data.x_axis_mean,
@@ -62,15 +63,11 @@ def extract_data_to_feature(data):
         data.magnitude_sqrt
     ]
 
-def get_train_features():
+def get_train_features(user):
     dataset = []
 
-    dataset_common = DatasetCommon.objects.all()
-    for data in dataset_common:
-        dataset.append(extract_data_to_feature(data))
-
-    dataset_personal = DatasetPersonal.objects.filter(user=1)
-    for data in dataset_personal:
+    activity = Activity.objects.filter(Q(user=1) | Q(user=user))
+    for data in activity:
         dataset.append(extract_data_to_feature(data))
 
     return np.array(dataset)
@@ -78,7 +75,7 @@ def get_train_features():
 def get_train_labels():
     dataset = []
 
-    dataset_label = DatasetPersonalLabel.objects.order_by('id')
+    dataset_label = ActivityLabel.objects.order_by('id')
     for data in dataset_label:
         dataset.append(data.name)
 

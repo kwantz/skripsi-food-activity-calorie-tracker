@@ -6,7 +6,7 @@ class DefaultManager(models.Manager):
 
 class ActivityLabel(models.Model):
     name = models.CharField(max_length=100)
-    calorie = models.IntegerField()
+    met = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True)

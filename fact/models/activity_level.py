@@ -6,6 +6,7 @@ class DefaultManager(models.Manager):
         return super().get_queryset().filter(deleted_at__isnull=True)
 
 class ActivityLevel(models.Model):
+    level = models.CharField(max_length=10)
     tdee = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

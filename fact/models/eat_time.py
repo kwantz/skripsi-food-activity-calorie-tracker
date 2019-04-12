@@ -6,6 +6,7 @@ class DefaultManager(models.Manager):
 
 class EatTime(models.Model):
     name = models.CharField(max_length=50)
+    percentage = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True)

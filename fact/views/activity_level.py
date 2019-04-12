@@ -1,9 +1,11 @@
 import json
+from django.db.models import Sum
+from datetime import datetime
 from django.http import JsonResponse
 from fact.libraries.jwt import JWT
 from django.views.decorators.csrf import csrf_exempt
-from fact.libraries.body import calculate_activity_factor, calculate_bmr
-from fact.models import ActivityLevel
+from fact.libraries.body import calculate_activity_factor, calculate_bmr, clasify_activity_factor
+from fact.models import ActivityLevel, CalorieBurnt
 
 @csrf_exempt
 def activity_level_new_api(request):
@@ -23,7 +25,8 @@ def activity_level_new_api(request):
 
         ActivityLevel.objects.create(
             tdee=tdee,
-            user=user
+            user=user,
+            level=level
         )
 
         return JsonResponse({"message": "Success"})
@@ -40,21 +43,34 @@ def activity_level_review_api(request):
         return JsonResponse({"message": "Unauthorized"})
 
     if request.method == "POST":
-        json_request = json.loads(request.body)
+        last_date_activity = ActivityLevel.objects.filter(user=user).latest("created_at")
+        current_date = datetime.now()
 
-        # TODO:
-        # SELECT * FROM calorie_burnt
-        # WHERE start_track BETWEEN ActivityLevel And Now
-        # GROUP BY ActivityLabel
-        # SUM duration
-        #
-        # Calculate: activity calorie * duration
-        # Add all PAR
-        # divide 24h * 30d
-        #
-        # if result < low, use low
-        # else use result
+        activities = CalorieBurnt.objects.filter(user=user, start_track__range=(last_date_activity, current_date)) \
+            .values("activity_label__met") \
+            .annotate(count_duration=Sum("duration")) \
 
-        return
+        pal = 0
+        for activity in activities:
+            pal += (activity["activity_label__met"] * activity["count_duration"])
+
+        pal = pal / (24 * 30)
+
+        if user.gender.id == 1 and pal < 1.56:
+            pal = 1.56
+        elif user.gender.id == 2 and pal < 1.55:
+            pal = 1.55
+
+        level = clasify_activity_factor(pal)
+        bmr = calculate_bmr(user)
+        tdee = pal * bmr
+
+        ActivityLevel.objects.create(
+            tdee=tdee,
+            user=user,
+            level=level
+        )
+
+        return JsonResponse({"message": "Success"})
 
     return JsonResponse({"message": "Invalid Method"})

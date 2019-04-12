@@ -3,7 +3,7 @@ from django.utils.dateparse import parse_datetime
 from fact.libraries.jwt import JWT
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-from fact.models import Food, CalorieIntake, EatTime, MealDetail
+from fact.models import Food, CalorieIntake, EatTime, MealDetail, Meal
 
 @csrf_exempt
 def calorie_burnt_food_api(request):
@@ -48,15 +48,15 @@ def calorie_burnt_meal_api(request):
         meal_id = json_request["meal"]
         eat_time_id = json_request["eat_time"]
 
+        meal = Meal.objects.get(id=meal_id)
         eat_time = EatTime.objects.get(id=eat_time_id)
-        meal_details = MealDetail.objects.filter(meal=meal_id)
-        for meal_detail in meal_details:
-            CalorieIntake.objects.create(
-                user=user,
-                eat_time=eat_time,
-                qty=meal_detail.qty,
-                food=meal_detail.food
-            )
+
+        CalorieIntake.objects.create(
+            qty = 1,
+            user=user,
+            meal=meal,
+            eat_time=eat_time,
+        )
 
         return JsonResponse({"message": "Success"})
 

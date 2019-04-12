@@ -5,6 +5,19 @@ def calculate_bmi(user):
     return user.weight / (user.height ** 2)
 
 
+def additional_goal_calorie_intake(user):
+    bmi = calculate_bmr(user)
+
+    if bmi < 18.5:
+        return 500
+
+    elif bmi > 24.9:
+        return -500
+
+    else:
+        return 0
+
+
 def calculate_bmr(user):
     bmr = -1
     age = datetime.now().year - user.birth_year
@@ -43,3 +56,15 @@ def calculate_activity_factor(user, level):
         activity_factor = 2.10 if user.gender.id == 1 else 2.00
 
     return activity_factor
+
+
+def clasify_activity_factor(pal):
+    if pal < 1.70:
+        return "low"
+
+    elif pal < 2.00:
+        return "medium"
+
+    else:
+        return "high"
+

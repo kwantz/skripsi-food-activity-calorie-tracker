@@ -35,3 +35,4 @@ Twisted==19.2.0
 txaio==18.8.1
 zope.interface==4.6.0
 gunicorn==19.9.0
+django-heroku==0.3.1

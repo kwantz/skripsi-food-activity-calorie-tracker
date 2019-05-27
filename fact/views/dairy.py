@@ -4,6 +4,7 @@ from fact.models import ActivityLevel, CalorieBurnt, CalorieIntake, MealDetail
 from datetime import datetime, time, date
 from fact.libraries.body import additional_goal_calorie_intake
 from django.utils.dateparse import parse_datetime
+import json
 
 def dairy_view(request):
     bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
@@ -13,13 +14,11 @@ def dairy_view(request):
         return JsonResponse({"message": "Unauthorized"})
 
     if request.method == "GET":
-        # TODO:
-        #
-        # delete food & activity (new api)
+        requested_at = parse_datetime(request.GET.get('requested_at', '') + "+0700")
 
         current_datetime = datetime.now()
-        today_min = datetime.combine(date.today(), time.min)
-        today_max = datetime.combine(date.today(), time.max)
+        today_min = datetime.combine(requested_at.date(), time.min)
+        today_max = datetime.combine(requested_at.date(), time.max)
         activity_level = ActivityLevel.objects.filter(user=user).latest("created_at")
 
         if (current_datetime - activity_level.created_at).days > 30:
@@ -37,24 +36,18 @@ def dairy_view(request):
         total_protein = 0
         total_fat = 0
 
-        dict_activity = {}
-        dict_duration = {}
+        list_activity = []
 
         for calorie_burnt in list_calorie_burnt:
             calorie = calorie_burnt.activity_label.met * user.weight * (calorie_burnt.duration / 3600)
             total_calorie_burnt += calorie
 
-            key = calorie_burnt.activity_label.name
-            dict_activity[key] = dict_activity[key] + calorie if key in dict_activity else calorie
-            dict_duration[key] = dict_duration[key] + calorie_burnt.duration if key in dict_duration else calorie_burnt.duration
-
-        list_activity = []
-        keys = list(dict_activity.keys())
-        for key in keys:
             list_activity.append({
-                "label": key,
-                "calorie": dict_activity[key],
-                "duration": dict_duration[key]
+                "id": calorie_burnt.id,
+                "calorie": calorie,
+                "duration": calorie_burnt.duration,
+                "start_track": calorie_burnt.start_track,
+                "label": calorie_burnt.activity_label.name,
             })
 
         dict_food = {}
@@ -87,6 +80,7 @@ def dairy_view(request):
                 }
 
             dict_food[calorie_intake.eat_time.name]["list"].append({
+                "id": calorie_intake.id,
                 "label": label,
                 "calorie": calorie,
                 "qty": calorie_intake.qty,

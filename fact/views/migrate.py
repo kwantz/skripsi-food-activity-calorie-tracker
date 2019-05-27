@@ -5,12 +5,7 @@ import bcrypt
 from django.utils.dateparse import parse_datetime
 
 def migrate_api(request):
-    try:
-        # Init table activity_level
-        list_data = ["Low", "Medium", "High"]
-        for data in list_data:
-            ActivityLevel.objects.create(name=data)
-
+    # try:
         # Init table gender
         list_data = ["Male", "Female"]
         for data in list_data:
@@ -32,7 +27,6 @@ def migrate_api(request):
             birth_year=1000,
             role=Role.objects.get(id=1),
             gender=Gender.objects.get(id=1),
-            activity_level=ActivityLevel.objects.get(id=2)
         )
 
         # Init table food_category
@@ -282,7 +276,7 @@ def migrate_api(request):
         for data in list_data:
             ActivityLabel.objects.create(
                 name=data,
-                calorie=0
+                met=0
             )
 
         # Init table dataset_common
@@ -3854,5 +3848,5 @@ def migrate_api(request):
 
         return JsonResponse({"message": "Initialize Complete"})
 
-    except Exception as error:
-        return JsonResponse({ "message": "Oops... You have error. " + str(error) })
+    # except Exception as error:
+    #     return JsonResponse({ "message": "Oops... You have error. " + str(error) })

@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from fact.models import Food, CalorieIntake, EatTime, MealDetail, Meal
 
 @csrf_exempt
-def calorie_burnt_food_api(request):
+def calorie_intake_food_api(request):
     bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
     user = JWT().decode(token)
 
@@ -35,7 +35,7 @@ def calorie_burnt_food_api(request):
 
 
 @csrf_exempt
-def calorie_burnt_meal_api(request):
+def calorie_intake_meal_api(request):
     bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
     user = JWT().decode(token)
 
@@ -58,6 +58,21 @@ def calorie_burnt_meal_api(request):
             eat_time=eat_time,
         )
 
+        return JsonResponse({"message": "Success"})
+
+    return JsonResponse({"message": "Invalid Method"})
+
+
+@csrf_exempt
+def calorie_intake_detail_api(request, food_id):
+    bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
+    user = JWT().decode(token)
+
+    if user is None:
+        return JsonResponse({"message": "Unauthorized"})
+
+    if request.method == "DELETE":
+        CalorieIntake.objects.get(user=user, id=food_id).delete()
         return JsonResponse({"message": "Success"})
 
     return JsonResponse({"message": "Invalid Method"})

@@ -14,3 +14,10 @@ from .quote import Quote
 from .meal_detail import MealDetail
 from .role import Role
 from .user import User
+from .history_search import HistorySearch
+
+# TODO:
+# [ ] show and add Quote
+# [ ] show and add Article
+# [ ] history
+

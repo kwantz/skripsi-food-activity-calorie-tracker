@@ -18,8 +18,27 @@ def additional_goal_calorie_intake(user):
         return 0
 
 
+def clasify_bmi(user):
+    bmi = calculate_bmr(user)
+    if bmi < 18.5:
+        return "underweight"
+
+    if bmi < 25.0:
+        return "normal"
+
+    if bmi < 30.0:
+        return "overweight"
+
+    if bmi < 35.0:
+        return "class I obesity"
+
+    if bmi < 40.0:
+        return "class II obesity"
+
+    return "class III obesity"
+
+
 def calculate_bmr(user):
-    bmr = -1
     age = datetime.now().year - user.birth_year
 
     if age <= 3:
@@ -60,11 +79,11 @@ def calculate_activity_factor(user, level):
 
 def clasify_activity_factor(pal):
     if pal < 1.70:
-        return "low"
+        return "low activity"
 
     elif pal < 2.00:
-        return "medium"
+        return "medium activity"
 
     else:
-        return "high"
+        return "high activity"
 

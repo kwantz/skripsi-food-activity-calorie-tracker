@@ -50,17 +50,18 @@ def calorie_burnt_api(request):
 
         for i in range(len(keys)):
             label = ActivityLabel.objects.annotate(lower_name=Lower('name')).get(lower_name=keys[i])
-            CalorieBurnt.objects.create(
-                user=user,
-                activity_label=label,
-                start_track = requested_at,
-                duration = dict[keys[i]] / 2
-            )
-            results.append({
-                "label": keys[i],
-                "time": dict[keys[i]] / 2,
-                "burnt": label.calorie * user.weight * (dict[keys[i]] / 2 / 60)
-            })
+            if (dict[keys[i]] / 2) > 0:
+                CalorieBurnt.objects.create(
+                    user=user,
+                    activity_label=label,
+                    start_track = requested_at,
+                    duration = dict[keys[i]] / 2
+                )
+                results.append({
+                    "label": keys[i],
+                    "time": dict[keys[i]] / 2,
+                    "burnt": label.calorie * user.weight * (dict[keys[i]] / 2 / 60)
+                })
 
         return JsonResponse({
             "results": results
@@ -77,3 +78,18 @@ def convert_raw_data_to_data_test(raw_data):
 
     raw_data = pd.DataFrame(raw_data)
     return np.array(list(features.extract(raw_data)))
+
+
+@csrf_exempt
+def calorie_burnt_detail_api(request, activity_id):
+    bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
+    user = JWT().decode(token)
+
+    if user is None:
+        return JsonResponse({"message": "Unauthorized"})
+
+    if request.method == "DELETE":
+        CalorieBurnt.objects.get(user=user, id=activity_id).delete()
+        return JsonResponse({"message": "Success"})
+
+    return JsonResponse({"message": "Invalid Method"})

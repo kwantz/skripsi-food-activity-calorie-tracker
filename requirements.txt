@@ -27,7 +27,6 @@ PyJWT==1.7.1
 pypiwin32==223
 python-dateutil==2.8.0
 pytz==2018.9
-pywin32==224
 scikit-learn==0.20.3
 scipy==1.2.1
 six==1.12.0

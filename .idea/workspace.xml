@@ -1,22 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="46cff5c9-e520-4e97-87cc-32a0e8d8bc34" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fact/libraries/body.py" beforeDir="false" afterPath="$PROJECT_DIR$/fact/libraries/body.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fact/migrations/0001_initial.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/fact/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/fact/models/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fact/models/article.py" beforeDir="false" afterPath="$PROJECT_DIR$/fact/models/article.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fact/serializers/login.py" beforeDir="false" afterPath="$PROJECT_DIR$/fact/serializers/login.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fact/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/fact/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fact/views/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/fact/views/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fact/views/calorie_burnt.py" beforeDir="false" afterPath="$PROJECT_DIR$/fact/views/calorie_burnt.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fact/views/calorie_intake.py" beforeDir="false" afterPath="$PROJECT_DIR$/fact/views/calorie_intake.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fact/views/dairy.py" beforeDir="false" afterPath="$PROJECT_DIR$/fact/views/dairy.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fact/views/migrate.py" beforeDir="false" afterPath="$PROJECT_DIR$/fact/views/migrate.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fact/views/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/fact/views/user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysite/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/mysite/settings.py" afterDir="false" />
-    </list>
+    <list default="true" id="46cff5c9-e520-4e97-87cc-32a0e8d8bc34" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,11 +25,20 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mysite/settings.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="374">
               <caret line="136" column="55" lean-forward="true" selection-start-line="136" selection-start-column="55" selection-end-line="136" selection-end-column="55" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/requirements.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="328">
+              <caret line="28" column="12" selection-start-line="28" selection-start-column="12" selection-end-line="28" selection-end-column="12" />
             </state>
           </provider>
         </entry>
@@ -108,7 +102,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/fact/models/gender.py" />
         <option value="$PROJECT_DIR$/fact/models/meal.py" />
         <option value="$PROJECT_DIR$/fact/models/recipe.py" />
         <option value="$PROJECT_DIR$/fact/models/role.py" />
@@ -159,6 +152,7 @@
         <option value="$PROJECT_DIR$/fact/routing.py" />
         <option value="$PROJECT_DIR$/fact/urls.py" />
         <option value="$PROJECT_DIR$/fact/views/user.py" />
+        <option value="$PROJECT_DIR$/requirements.txt" />
       </list>
     </option>
   </component>
@@ -179,46 +173,6 @@
           <expand>
             <path>
               <item name="mysite" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mysite" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="mysite" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mysite" type="462c0819:PsiDirectoryNode" />
-              <item name="fact" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="mysite" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mysite" type="462c0819:PsiDirectoryNode" />
-              <item name="fact" type="462c0819:PsiDirectoryNode" />
-              <item name="libraries" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="mysite" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mysite" type="462c0819:PsiDirectoryNode" />
-              <item name="fact" type="462c0819:PsiDirectoryNode" />
-              <item name="models" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="mysite" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mysite" type="462c0819:PsiDirectoryNode" />
-              <item name="fact" type="462c0819:PsiDirectoryNode" />
-              <item name="serializers" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="mysite" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mysite" type="462c0819:PsiDirectoryNode" />
-              <item name="fact" type="462c0819:PsiDirectoryNode" />
-              <item name="views" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="mysite" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mysite" type="462c0819:PsiDirectoryNode" />
-              <item name="fact" type="462c0819:PsiDirectoryNode" />
-              <item name="websockets" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="mysite" type="b2602c69:ProjectViewProjectNode" />
-              <item name="mysite" type="462c0819:PsiDirectoryNode" />
               <item name="mysite" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -296,8 +250,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24330357" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24330357" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" weight="0.3296131" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -310,23 +265,13 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="9" />
-      <window_info active="true" anchor="bottom" x="684" y="31" width="681" height="696" id="Terminal" order="10" type="WINDOWED" visible="true" weight="0.7217676" />
+      <window_info anchor="bottom" x="684" y="31" width="681" height="696" id="Terminal" order="10" type="WINDOWED" visible="true" weight="0.7217676" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/fact/libraries/machinelearning.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6766">
-          <caret line="399" selection-start-line="399" selection-end-line="399" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/fact/libraries/jwt.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="34">
@@ -769,6 +714,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="374">
           <caret line="136" column="55" lean-forward="true" selection-start-line="136" selection-start-column="55" selection-end-line="136" selection-end-column="55" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="328">
+          <caret line="28" column="12" selection-start-line="28" selection-start-column="12" selection-end-line="28" selection-end-column="12" />
         </state>
       </provider>
     </entry>

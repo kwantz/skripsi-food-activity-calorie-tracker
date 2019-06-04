@@ -335,7 +335,6 @@ class RKELM:
         ndarray
             the output weights
         """
-        print(y)
         K = self.gaussian_kernel(x, x_small)
         Kt = np.transpose(K)
 
@@ -395,10 +394,8 @@ class RKELM:
             in accordance with the feature label
         """
         x = self.gaussian_kernel(data, self.x_train)
-        print(x)
         y = np.dot(x, self.B)
 
-        print (y)
         clasification = np.zeros([y.shape[0]])
         for i in range(y.shape[0]):
             clasification[i] = np.argmax(y[i])

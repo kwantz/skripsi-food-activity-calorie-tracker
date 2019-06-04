@@ -1,48 +1,66 @@
 from django.urls import path
+from . import temp
 from . import views
 
 urlpatterns = [
-    # path("user", views.user, name="user"),
+    # General API
+    path("login", views.api_login, name="api_login"),
+    path("register", views.api_register, name="api_register"),
+    path("forgot-password", views.api_forgot_password, name="api_forgot_password"),
+    path("reset-password/<forgot_password>", views.api_reset_password, name="api_reset_password"),
 
-    path("check", views.check, name="check"),
-    path("migrate", views.migrate_api, name="migrate_api"),
-    path("compare", views.compare_api, name="compare_api"),
+    path("image/upload", views.api_upload, name="api_upload"),
+    path("image/<image>", views.api_image, name="api_image"),
 
-    path("calorie-burnt", views.calorie_burnt_api, name="calorie_burnt_api"),
-    path("calorie-burnt/<int:activity_id>", views.calorie_burnt_detail_api, name="calorie_burnt_detail_api"),
 
-    path("calorie-intake/food", views.calorie_intake_food_api, name="calorie_burnt_food_api"),
-    path("calorie-intake/meal", views.calorie_intake_meal_api, name="calorie_burnt_meal_api"),
-    path("calorie-intake/<int:food_id>", views.calorie_intake_detail_api, name="calorie_intake_detail_api"),
+    # API for Admin Web
+    path("dashboard", views.api_dashboard, name="api_dashboard"),
+    path("dashboard/new-users", views.api_new_user, name="api_new_user"),
 
-    path("self-train", views.self_train_api, name="self_train_api"),
-    
-    path("activity_level/new", views.activity_level_new_api, name="activity_level_new_api"),
-    path("activity_level/review", views.activity_level_review_api, name="activity_level_review_api"),
+    path("food", views.api_food, name="api_food"),
+    path("food/<int:food_id>", views.api_food_detail, name="api_food_detail"),
+
+    path("food-category", views.api_food_category, name="api_food_category"),
+    path("food-category/<int:food_category_id>", views.api_food_category_detail, name="api_food_category_detail"),
+
+    path("activity", views.api_activity, name="api_activity"),
+    path("activity/<int:activity_id>", views.api_activity_detail, name="api_activity_detail"),
+
+    path("quote", views.api_quote, name="api_quote"),
+    path("quote/<int:quote_id>", views.api_quote_detail, name="api_quote_detail"),
+
+    path("article", views.api_article, name="api_article"),
+    path("article/<int:article_id>", views.api_article_detail, name="api_article_detail"),
+
+    path("user", views.api_user, name="api_user"),
+    path("user/<int:user_id>", views.api_user_detail, name="api_user_detail"),
+
+    path("comparison", views.api_comparison, name="api_comparison"),
+    path("comparison/upload", views.api_comparison_upload, name="api_comparison_upload"),
+
+
+    # path("user", temp.user, name="user"),
+
+    # path("check", temp.check, name="check"),
+    # path("migrate", temp.migrate_api, name="migrate_api"),
+    # path("compare", temp.compare_api, name="compare_api"),
+    #
+    # path("calorie-burnt", temp.calorie_burnt_api, name="calorie_burnt_api"),
+    # path("calorie-burnt/<int:activity_id>", temp.calorie_burnt_detail_api, name="calorie_burnt_detail_api"),
+    #
+    # path("calorie-intake/food", temp.calorie_intake_food_api, name="calorie_burnt_food_api"),
+    # path("calorie-intake/meal", temp.calorie_intake_meal_api, name="calorie_burnt_meal_api"),
+    # path("calorie-intake/<int:food_id>", temp.calorie_intake_detail_api, name="calorie_intake_detail_api"),
+    #
+    # path("self-train", temp.self_train_api, name="self_train_api"),
+    #
+    # path("activity_level/new", temp.activity_level_new_api, name="activity_level_new_api"),
+    # path("activity_level/review", temp.activity_level_review_api, name="activity_level_review_api"),
 
     # Frontend
-    path("login", views.login, name="login"),
-    path("register", views.register, name="register"),
 
-    path("dashboard", views.dashboard_api, name="dashboard_api"),
-    path("dashboard/new-users", views.new_user_api, name="new_user_api"),
+    # path("images/<image>", temp.testing_my_api, name="testing_my_api"),
+    # path("upload", temp.upload_api, name="upload_api"),
+    # path("article", temp.article_api, name="article_api"),
 
-    path("food", views.food_api, name="food_api"),
-    path("food/<int:food_id>", views.food_detail_api, name="food_detail_api"),
-
-    path("food-category", views.food_category_api, name="food_category_api"),
-    path("food-category/all", views.all_food_category_api, name="all_food_category_api"),
-
-    path("activity", views.activity_api, name="activity_api"),
-    path("activity/<int:activity_id>", views.activity_detail_api, name="activity_detail_api"),
-
-    path("images/<image>", views.testing_my_api, name="testing_my_api"),
-    path("upload", views.upload_api, name="upload_api"),
-    path("article", views.article_api, name="article_api"),
-
-    path("quote", views.quote_api, name="quote_api"),
-    path("quote/<int:quote_id>", views.quote_detail_api, name="quote_detail_api"),
-
-    path("user", views.user_api, name="user_api"),
-    path("user/<int:user_id>", views.user_detail_api, name="user_detail_api")
 ]

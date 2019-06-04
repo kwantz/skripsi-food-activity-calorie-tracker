@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist
 import bcrypt
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-from fact.serializers import LoginSerializer
+# from fact.serializers import LoginSerializer
 from django.db.models.functions import Lower
 from math import ceil
 from datetime import datetime, timedelta, time
@@ -27,7 +27,7 @@ def login(request):
             hashed = user.password.encode("utf-8")
 
             if bcrypt.checkpw(input_password.encode("utf-8"), hashed):
-                return JsonResponse({"results": LoginSerializer(user).json()})
+                return JsonResponse({"results": user})
 
             else:
                 return JsonResponse({"message": "Invalid credentials"})

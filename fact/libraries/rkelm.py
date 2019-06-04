@@ -21,7 +21,6 @@ class RKELM:
         x_small_train = np.zeros([x_small_train_size, self.x_train.shape[1]])
 
         for i in range(x_small_train_size):
-            print(i, (i * 10) % self.x_train.shape[0])
             x_small_train[i] = self.x_train[(i * 10) % self.x_train.shape[0]]
 
         self.x_small_train = x_small_train
@@ -119,7 +118,6 @@ class RKELM:
         return c
 
     def train(self):
-        print(self.x_train.shape)
         K = self.gaussian_kernel(self.x_train, self.x_small_train)
         # K = self.input_to_hidden(self.x_train)
         Kt = np.transpose(K)

@@ -1,16 +1,16 @@
 import json
-from django.http import JsonResponse
-from fact.libraries.jwt import JWT
-from django.views.decorators.csrf import csrf_exempt
 from fact.models import Food, FoodCategory, CalorieIntake, MealDetail, Meal
-from django.db.models import Q
+from fact.libraries.jwt import JWT
+from django.http import JsonResponse
+from django.db.models import F, Q
 from django.db.models.functions import Lower
-from math import ceil
+from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
+from math import ceil
+
 
 @csrf_exempt
-def food_api(request):
-
+def api_food(request):
     if request.method == "GET":
         name = request.GET.get("name", "").lower()
         page = int(request.GET.get("page", 1))
@@ -18,7 +18,7 @@ def food_api(request):
         offset = (page - 1) * 30
         limit = offset + 30
 
-        categories = FoodCategory.objects.all()
+        categories = FoodCategory.objects.values('id', 'name')
         if category == 0:
             foods = Food.objects.all() if name == "" else \
                 Food.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name)
@@ -28,65 +28,42 @@ def food_api(request):
 
         total = len(foods)
         pages = ceil(total / 30)
-        foods = foods[offset:limit]
-
-        food_results = []
-        for food in foods:
-            food_results.append({
-                "id": food.id,
-                "name": food.name,
-                "calorie": food.calorie,
-                "category": food.food_category.name
-            })
-
-        category_results = []
-        for category in categories:
-            category_results.append({
-                "id": category.id,
-                "name": category.name
-            })
+        foods = foods.annotate(category=F('food_category__name')) \
+                    .values('id', 'name', 'calorie', 'category')[offset:limit]
 
         return JsonResponse({"results": {
             "total": total,
             "pages": pages,
-            "foods": food_results,
-            "categories": category_results
+            "foods": list(foods),
+            "categories": list(categories)
         }})
 
-    bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
-    user = JWT().decode(token)
-
-    if user is None:
-        return JsonResponse({"message": "Unauthorized"})
-
     if request.method == "POST":
+        bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
+        print(token)
+        user = JWT().decode(token)
+
+        if user is None:
+            return JsonResponse({"message": "Unauthorized"}, status=401)
+
         json_request = json.loads(request.body)
-        name = json_request["name"]
-        calorie = json_request["calorie"]
-        carbohydrate = json_request["carbohydrate"]
-        protein = json_request["protein"]
-        fat = json_request["fat"]
-        category = json_request["category"]
-
-        category = FoodCategory.objects.get(id=category)
-
         Food.objects.create(
             user=user,
-            food_category=category,
-            fat=fat,
-            name=name,
-            calorie=calorie,
-            protein=protein,
-            carbohydrate=carbohydrate,
+            fat=json_request["fat"],
+            name=json_request["name"],
+            calorie=json_request["calorie"],
+            protein=json_request["protein"],
+            carbohydrate=json_request["carbohydrate"],
+            food_category=FoodCategory.objects.get(id=json_request["category"]),
         )
 
         return JsonResponse({"message": "Success"})
 
-    return JsonResponse({"message": "Invalid Method"})
+    return JsonResponse({"message": "Not Found"}, status=404)
 
 
 @csrf_exempt
-def food_detail_api(request, food_id):
+def api_food_detail(request, food_id):
     if request.method == "GET":
         food = Food.objects.get(id=food_id)
         return JsonResponse({"results": {
@@ -101,20 +78,13 @@ def food_detail_api(request, food_id):
 
     if request.method == "PUT":
         json_request = json.loads(request.body)
-        name = json_request["name"]
-        calorie = json_request["calorie"]
-        carbohydrate = json_request["carbohydrate"]
-        protein = json_request["protein"]
-        fat = json_request["fat"]
-        category = json_request["category"]
-
         food = Food.objects.get(id=food_id)
-        food.fat = fat
-        food.name = name
-        food.calorie = calorie
-        food.protein = protein
-        food.carbohydrate = carbohydrate
-        food.food_category = FoodCategory.objects.get(id=category)
+        food.fat = json_request["fat"]
+        food.name = json_request["name"]
+        food.calorie = json_request["calorie"]
+        food.protein = json_request["protein"]
+        food.carbohydrate = json_request["carbohydrate"]
+        food.food_category = FoodCategory.objects.get(id=json_request["category"])
         food.save()
 
         return JsonResponse({"message": "Success"})
@@ -126,8 +96,7 @@ def food_detail_api(request, food_id):
 
         return JsonResponse({"message": "Success"})
 
-    return JsonResponse({"message": "Invalid Method"})
-
+    return JsonResponse({"message": "Not Found"}, status=404)
 
 # @csrf_exempt
 # def food_user_api(request):
@@ -135,7 +104,7 @@ def food_detail_api(request, food_id):
 #     user = JWT().decode(token)
 #
 #     if user is None:
-#         return JsonResponse({"message": "Unauthorized"})
+#         return JsonResponse({"message": "Unauthorized"}, status=401)
 #
 #     if request.method == "GET":
 #         if request.GET.get('category') is not None:
@@ -197,7 +166,7 @@ def food_detail_api(request, food_id):
 #     user = JWT().decode(token)
 #
 #     if user is None:
-#         return JsonResponse({"message": "Unauthorized"})
+#         return JsonResponse({"message": "Unauthorized"}, status=401)
 #
 #     if request.method == "GET":
 #         list_calorie_intake = CalorieIntake.objects.filter(user=user).order_by("-created_at")[:30]

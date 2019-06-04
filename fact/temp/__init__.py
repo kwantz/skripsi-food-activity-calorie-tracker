@@ -11,4 +11,3 @@ from .food_category import *
 from .article import *
 from .uploads import *
 from .quote import *
-from .dashboard import *

@@ -39,6 +39,12 @@ urlpatterns = [
     path("comparison/upload", views.api_comparison_upload, name="api_comparison_upload"),
 
 
+    # API for Admin Web
+    path("member/newsfeed", views.api_member_newsfeed, name="api_member_newsfeed"),
+
+    path("member/article", views.api_member_article, name="api_member_article"),
+    path("member/article/<int:article_id>", views.api_member_article_detail, name="api_member_article_detail"),
+
     # path("user", temp.user, name="user"),
 
     # path("check", temp.check, name="check"),

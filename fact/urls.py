@@ -45,6 +45,13 @@ urlpatterns = [
     path("member/article", views.api_member_article, name="api_member_article"),
     path("member/article/<int:article_id>", views.api_member_article_detail, name="api_member_article_detail"),
 
+    path("member/activity-level", views.api_member_activity_level, name="api_member_activity_level"),
+    path("member/activity-level/review", views.api_member_activity_level_review, name="api_member_activity_level_review"),
+
+    path("member/user", views.api_member_user_detail, name="api_member_user_detail"),
+
+    path("member/food", views.api_member_food, name="api_member_food")
+
     # path("user", temp.user, name="user"),
 
     # path("check", temp.check, name="check"),

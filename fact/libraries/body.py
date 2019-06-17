@@ -79,11 +79,11 @@ def calculate_activity_factor(user, level):
 
 def clasify_activity_factor(pal):
     if pal < 1.70:
-        return "low activity"
+        return "low"
 
     elif pal < 2.00:
-        return "medium activity"
+        return "medium"
 
     else:
-        return "high activity"
+        return "high"
 

@@ -11,3 +11,6 @@ from .user import *
 
 from .member.article import *
 from .member.newsfeed import *
+from .member.activity_level import *
+from .member.user import *
+from .member.food import *

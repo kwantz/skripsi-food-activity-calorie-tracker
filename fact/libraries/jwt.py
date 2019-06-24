@@ -17,7 +17,7 @@ class JWT:
             id  = data.get("id", 0)
             name = data.get("name", "")
             email = data.get("email", "")
-            return User.objects.get(id=id, name=name, email=email)
+            return User.objects.get(id=id)
 
         except jwt.ExpiredSignatureError:
             return None

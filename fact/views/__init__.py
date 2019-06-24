@@ -14,3 +14,7 @@ from .member.newsfeed import *
 from .member.activity_level import *
 from .member.user import *
 from .member.food import *
+from .member.meal import *
+from .member.intake import *
+from .member.diary import *
+from .member.history import *

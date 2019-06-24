@@ -1,5 +1,6 @@
 from fact.models import ActivityLevel, CalorieBurnt, CalorieIntake, MealDetail
 
+
 def top_food(top=10):
     dist_food = {}
     calorie_intake = CalorieIntake.objects.all()
@@ -23,7 +24,6 @@ def top_food(top=10):
 
     list_food.sort()
     return list_food[:top]
-
 
 
 def top_user(date_start, date_end, top=5):

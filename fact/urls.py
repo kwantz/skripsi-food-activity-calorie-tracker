@@ -40,6 +40,8 @@ urlpatterns = [
 
 
     # API for Admin Web
+    path("member/user", views.api_member_user_detail, name="api_member_user_detail"),
+    path("member/diary", views.api_member_diary, name="api_member_diary"),
     path("member/newsfeed", views.api_member_newsfeed, name="api_member_newsfeed"),
 
     path("member/article", views.api_member_article, name="api_member_article"),
@@ -48,9 +50,14 @@ urlpatterns = [
     path("member/activity-level", views.api_member_activity_level, name="api_member_activity_level"),
     path("member/activity-level/review", views.api_member_activity_level_review, name="api_member_activity_level_review"),
 
-    path("member/user", views.api_member_user_detail, name="api_member_user_detail"),
+    path("member/food", views.api_member_food, name="api_member_food"),
+    path("member/meal", views.api_member_meal, name="api_member_meal"),
 
-    path("member/food", views.api_member_food, name="api_member_food")
+    path("member/intake", views.api_member_intake, name="api_member_intake"),
+    path("member/intake/food", views.api_member_intake_food, name="api_member_intake_food"),
+    path("member/intake/meal", views.api_member_intake_meal, name="api_member_intake_meal"),
+
+    path("member/history/intake", views.api_member_history_intake, name="api_member_history_intake"),
 
     # path("user", temp.user, name="user"),
 

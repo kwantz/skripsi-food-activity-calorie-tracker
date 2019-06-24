@@ -2,7 +2,7 @@ from datetime import datetime
 
 
 def calculate_bmi(user):
-    return user.weight / (user.height ** 2)
+    return user.weight * 10000 / (user.height ** 2)
 
 
 def additional_goal_calorie_intake(user):

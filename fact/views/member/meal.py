@@ -10,7 +10,7 @@ from math import ceil
 
 
 @csrf_exempt
-def api_member_food(request):
+def api_member_meal(request):
     bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
     user = JWT().decode(token)
 
@@ -20,31 +20,47 @@ def api_member_food(request):
     if request.method == "GET":
         name = request.GET.get("name", "").lower()
         page = int(request.GET.get("page", 1))
-        category = int(request.GET.get("category", 0))
         offset = (page - 1) * 10
         limit = offset + 10
 
-        if category == 0:
-            foods = Food.objects.annotate(lower_name=Lower("name")).filter(Q(user=1) | Q(user=user.id), lower_name__contains=name)
-        else:
-            foods = Food.objects.annotate(lower_name=Lower("name")).filter(Q(user=1) | Q(user=user.id), lower_name__contains=name, food_category=category)
+        results = []
+        meals = Meal.objects.annotate(lower_name=Lower("name")).filter(Q(user=1) | Q(user=user.id), lower_name__contains=name)[offset:limit]
 
-        foods = foods.values('id', 'name', 'calorie', 'fat', 'protein', 'carbohydrate')[offset:limit]
+        for meal in meals:
+            detail = []
+            meal_details = MealDetail.objects.filter(meal=meal)
+            for meal_detail in meal_details:
+                detail.append({
+                    "qty": meal_detail.qty,
+                    "name": meal_detail.food.name,
+                    "calorie": meal_detail.food.calorie,
+                    "carbohydrate": meal_detail.food.carbohydrate,
+                    "protein": meal_detail.food.protein,
+                    "fat": meal_detail.food.fat
+                })
+            results.append({
+                "id": meal.id,
+                "name": meal.name,
+                "meal_detail": detail
+            })
+
         return JsonResponse({"results": {
-            "foods": list(foods),
+            "meals": results
         }})
 
     if request.method == "POST":
         json_request = json.loads(request.body)
-        Food.objects.create(
+        meal = Meal.objects.create(
             user=user,
-            fat=json_request["fat"],
-            name=json_request["name"],
-            calorie=json_request["calorie"],
-            protein=json_request["protein"],
-            carbohydrate=json_request["carbohydrate"],
-            food_category=FoodCategory.objects.get(id=json_request["category"]),
+            name=json_request["name"]
         )
+
+        for food in json_request["food"]:
+            MealDetail.objects.create(
+                meal=meal,
+                food=Food.objects.get(id=int(food["id"])),
+                qty=int(food["qty"])
+            )
 
         return JsonResponse({"message": "Success"})
 
@@ -52,7 +68,7 @@ def api_member_food(request):
 
 
 # @csrf_exempt
-# def api_food_detail(request, food_id):
+# def api_meal_detail(request, food_id):
 #     if request.method == "GET":
 #         food = Food.objects.get(id=food_id)
 #         return JsonResponse({"results": {

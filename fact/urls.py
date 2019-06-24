@@ -12,6 +12,8 @@ urlpatterns = [
     path("image/upload", views.api_upload, name="api_upload"),
     path("image/<image>", views.api_image, name="api_image"),
 
+    path("migrate", views.api_migrate, name="api_migrate"),
+
 
     # API for Admin Web
     path("dashboard", views.api_dashboard, name="api_dashboard"),
@@ -39,7 +41,7 @@ urlpatterns = [
     path("comparison/upload", views.api_comparison_upload, name="api_comparison_upload"),
 
 
-    # API for Admin Web
+    # API for Member Web
     path("member/user", views.api_member_user_detail, name="api_member_user_detail"),
     path("member/diary", views.api_member_diary, name="api_member_diary"),
     path("member/newsfeed", views.api_member_newsfeed, name="api_member_newsfeed"),

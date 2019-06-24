@@ -1,11 +1,21 @@
 from django.http import JsonResponse
 from fact.libraries.datetime import Datetime
-from fact.models import Activity, ActivityLabel, ActivityLevel, Gender, User, Role, Food, FoodCategory
+from fact.models import Activity, ActivityLabel, ActivityLevel, Gender, User, Role, Food, FoodCategory, EatTime
 import bcrypt
 from django.utils.dateparse import parse_datetime
 
-def migrate_api(request):
+def api_migrate(request):
     # try:
+        list_data = ["Breakfast", "Lunch", "Dinner", "Snack"]
+        percentage = {
+            "Breakfast": 30,
+            "Lunch": 30,
+            "Dinner": 25,
+            "Snack": 15
+        }
+        for data in list_data:
+            EatTime.objects.create(name=data, percentage=percentage[data])
+
         # Init table gender
         list_data = ["Male", "Female"]
         for data in list_data:

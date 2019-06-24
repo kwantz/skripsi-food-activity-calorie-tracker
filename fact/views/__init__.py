@@ -8,6 +8,7 @@ from .guess import *
 from .image import *
 from .quote import *
 from .user import *
+from .migrate import *
 
 from .member.article import *
 from .member.newsfeed import *

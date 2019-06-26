@@ -6,6 +6,17 @@ from django.db.models.functions import Lower
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta, time
 from math import ceil
+from fact.libraries.jwt import JWT
+
+
+def api_check(request):
+    bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
+    user = JWT().decode(token)
+
+    if user is None:
+        return JsonResponse({"message": "Unauthorized"}, status=401)
+
+    return JsonResponse({"message": "Success"})
 
 
 def api_user(request):

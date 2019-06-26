@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     # General API
+    path("check", views.api_check, name="api_check"),
     path("login", views.api_login, name="api_login"),
     path("register", views.api_register, name="api_register"),
     path("forgot-password", views.api_forgot_password, name="api_forgot_password"),

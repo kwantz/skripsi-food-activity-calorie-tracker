@@ -76,7 +76,7 @@ def api_member_user_detail(request):
             input_old_password = json_request["old_password"]
 
             hashed = user.password.encode("utf-8")
-            if not bcrypt.checkpw(input_old_password.encode("utf-8"), hashed) and input_re_password == input_password:
+            if not bcrypt.checkpw(input_old_password.encode("utf-8"), hashed) and input_re_password != input_password:
                 return JsonResponse({"message": "Invalid password"})
 
             input_password = bcrypt.hashpw(json_request["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")

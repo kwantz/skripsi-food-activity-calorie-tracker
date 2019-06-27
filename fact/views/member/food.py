@@ -30,6 +30,10 @@ def api_member_food(request):
             foods = Food.objects.annotate(lower_name=Lower("name")).filter(Q(user=1) | Q(user=user.id), lower_name__contains=name, food_category=category)
 
         foods = foods.values('id', 'name', 'calorie', 'fat', 'protein', 'carbohydrate')[offset:limit]
+
+        if name == "all":
+            foods = Food.objects.filter(Q(user=1) | Q(user=user.id), food_category=category).values('id', 'name', 'calorie', 'fat', 'protein', 'carbohydrate')
+
         return JsonResponse({"results": {
             "foods": list(foods),
         }})

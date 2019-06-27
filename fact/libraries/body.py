@@ -19,7 +19,8 @@ def additional_goal_calorie_intake(user):
 
 
 def clasify_bmi(user):
-    bmi = calculate_bmr(user)
+    bmi = calculate_bmi(user)
+
     if bmi < 18.5:
         return "underweight"
 

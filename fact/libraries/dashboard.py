@@ -48,7 +48,7 @@ def top_user(date_start, date_end, top=5):
 
         if user_id not in dict_user:
             dict_user[user_id] = 0
-            dict_user[user_id] = calorie.user.name
+            dict_username[user_id] = calorie.user.name
 
         if dict_user[user_id] == 1:
             continue

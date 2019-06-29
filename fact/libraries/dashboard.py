@@ -19,7 +19,7 @@ def top_food(top=10):
                     dist_food[meal.food.name] += (intake.qty * meal.qty)
 
     list_food = []
-    for key, value in dist_food:
+    for key, value in dist_food.items():
         list_food.append((value, key))
 
     list_food.sort()

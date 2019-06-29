@@ -5,7 +5,7 @@ from fact.libraries.jwt import JWT
 import json
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta, time, date
-from fact.libraries.body import calculate_bmr
+from fact.libraries.body import calculate_bmi
 
 
 def api_member_diary(request):

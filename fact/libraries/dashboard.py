@@ -80,7 +80,7 @@ def top_user(date_start, date_end, top=5):
             dict_user[user_id] += 1
 
     list_user = []
-    for key, value in dict_user:
+    for key, value in dict_user.items():
         list_user.append((value, key))
 
     list_user.sort()

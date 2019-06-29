@@ -123,7 +123,7 @@ def api_user_detail(request, user_id):
         json_request = json.loads(request.body)
         input_reason_block = json_request.get("reason_block", user.name)
 
-        if input_reason_block == "unblock":
+        if input_reason_block == "none":
             user.reason_block = None
             user.blocked_at = None
             user.save()

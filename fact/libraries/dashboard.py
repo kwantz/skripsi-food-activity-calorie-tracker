@@ -11,7 +11,7 @@ def top_food(top=10):
             else:
                 dist_food[intake.food.name] += intake.qty
         else:
-            meals = MealDetail.objects.get(meal=intake.meal.id)
+            meals = MealDetail.objects.filter(meal=intake.meal.id)
             for meal in meals:
                 if meal.food.name not in dist_food:
                     dist_food[meal.food.name] = 0

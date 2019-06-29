@@ -17,10 +17,10 @@ def api_dashboard(request):
         underweight = 0
         total_user = User.objects.filter(role=2)
         for user in total_user:
-            bmr = body.calculate_bmr(user)
-            if bmr < 18.5:
+            bmi = body.calculate_bmi(user)
+            if bmi < 18.5:
                 underweight += 1
-            elif bmr < 25.0:
+            elif bmi < 25.0:
                 normal += 1
             else:
                 overweight += 1

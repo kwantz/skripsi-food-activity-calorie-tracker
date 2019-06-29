@@ -82,7 +82,7 @@ def api_member_diary(request):
             "snack": activity_level.tdee * eat_time[3].percentage / 100
         }
 
-        bmr = calculate_bmr(user)
+        bmi = calculate_bmi(user)
         calorie = {
             "intake": total_calorie_intake,
             "total_intake": activity_level.tdee,
@@ -90,9 +90,9 @@ def api_member_diary(request):
             "total_burnt": activity_level.tdee,
         }
 
-        if bmr < 18.5:
+        if bmi < 18.5:
             calorie["total_intake"] += 500
-        elif bmr >= 25.0:
+        elif bmi >= 25.0:
             calorie["total_intake"] -= 500
 
         return JsonResponse({

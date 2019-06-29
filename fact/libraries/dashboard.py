@@ -8,21 +8,21 @@ def top_food(top=10):
         if intake.food is not None:
             if intake.food.name not in dist_food:
                 dist_food[intake.food.name] = 0
-            else:
-                dist_food[intake.food.name] += intake.qty
+
+            dist_food[intake.food.name] += intake.qty
         else:
             meals = MealDetail.objects.filter(meal=intake.meal.id)
             for meal in meals:
                 if meal.food.name not in dist_food:
                     dist_food[meal.food.name] = 0
-                else:
-                    dist_food[meal.food.name] += (intake.qty * meal.qty)
+
+                dist_food[meal.food.name] += (intake.qty * meal.qty)
 
     list_food = []
     for key, value in dist_food.items():
         list_food.append((value, key))
 
-    list_food.sort()
+    list_food.sort(reverse=True)
     return list_food[:top]
 
 
@@ -33,6 +33,7 @@ def top_user(date_start, date_end, top=5):
     dict_list_user_burnt = {}
     dict_user_tdee = {}
     dict_user = {}
+    dict_username = {}
 
     for calorie in calorie_food:
         user_id = calorie.user.id
@@ -47,6 +48,7 @@ def top_user(date_start, date_end, top=5):
 
         if user_id not in dict_user:
             dict_user[user_id] = 0
+            dict_user[user_id] = calorie.user.name
 
         if dict_user[user_id] == 1:
             continue
@@ -81,7 +83,7 @@ def top_user(date_start, date_end, top=5):
 
     list_user = []
     for key, value in dict_user.items():
-        list_user.append((value, key))
+        list_user.append((value, dict_username[key]))
 
-    list_user.sort()
+    list_user.sort(reverse=True)
     return list_user[:top]

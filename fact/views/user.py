@@ -74,13 +74,13 @@ def api_user_detail(request, user_id):
             "weight": user.weight,
             "height": user.height,
             "category": body.clasify_bmi(user),
-            "activity": activity_level[-1].level if len(activity_level) != 0 else "none",
+            "activity": activity_level[:-1].level if len(activity_level) != 0 else "none",
             "carbohydrate": carbohydrate,
             "protein": protein,
             "fat": fat,
-            "max_carbohydrate": (0.6 * activity_level[-1].tdee / 4) if len(activity_level) != 0 else 0,
-            "max_protein": (0.15 * activity_level[-1].tdee / 4) if len(activity_level) != 0 else 0,
-            "max_fat": (0.25 * activity_level[-1].tdee / 9) if len(activity_level) != 0 else 0,
+            "max_carbohydrate": (0.6 * activity_level[:-1].tdee / 4) if len(activity_level) != 0 else 0,
+            "max_protein": (0.15 * activity_level[:-1].tdee / 4) if len(activity_level) != 0 else 0,
+            "max_fat": (0.25 * activity_level[:-1].tdee / 9) if len(activity_level) != 0 else 0,
         }})
 
     if request.method == "PUT":

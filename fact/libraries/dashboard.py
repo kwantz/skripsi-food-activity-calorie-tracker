@@ -1,5 +1,5 @@
 from fact.models import ActivityLevel, CalorieBurnt, CalorieIntake, MealDetail
-
+from fact.libraries.body import clasify_bmi
 
 def top_food(top=10):
     dist_food = {}
@@ -34,6 +34,7 @@ def top_user(date_start, date_end, top=5):
     dict_user_tdee = {}
     dict_user = {}
     dict_username = {}
+    dict_status = {}
 
     for calorie in calorie_food:
         user_id = calorie.user.id
@@ -48,6 +49,7 @@ def top_user(date_start, date_end, top=5):
 
         if user_id not in dict_user:
             dict_user[user_id] = 0
+            dict_status[user_id] = clasify_bmi(calorie.user)
             dict_username[user_id] = calorie.user.name
 
         if dict_user[user_id] == 1:
@@ -83,7 +85,7 @@ def top_user(date_start, date_end, top=5):
 
     list_user = []
     for key, value in dict_user.items():
-        list_user.append((value, dict_username[key]))
+        list_user.append((value, dict_username[key], dict_status[key]))
 
     list_user.sort(reverse=True)
     return list_user[:top]

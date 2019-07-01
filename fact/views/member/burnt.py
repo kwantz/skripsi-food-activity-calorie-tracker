@@ -61,7 +61,7 @@ def api_member_burnt(request):
                 results.append({
                     "label": keys[i],
                     "time": dict[keys[i]] / 2,
-                    "burnt": label.calorie * user.weight * (dict[keys[i]] / 2 / 60)
+                    "burnt": label.met * user.weight * (dict[keys[i]] / 2 / 60)
                 })
 
         return JsonResponse({

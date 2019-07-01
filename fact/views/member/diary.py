@@ -30,7 +30,7 @@ def api_member_diary(request):
         dict_activity = {}
         burnt = []
         for calorie in calorie_burnt:
-            if calorie.activity_label.name in dict_activity:
+            if calorie.activity_label.name not in dict_activity:
                 dict_activity[calorie.activity_label.name] = {
                     "duration": 0,
                     "calorie": 0

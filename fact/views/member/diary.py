@@ -54,7 +54,10 @@ def api_member_diary(request):
         nutrient = {
             "fat": 0,
             "protein": 0,
-            "carbohydrate": 0
+            "carbohydrate": 0,
+            "total_fat": 0,
+            "total_protein": 0,
+            "total_carbohydrate": 0
         }
 
         total_calorie_intake = 0
@@ -114,6 +117,10 @@ def api_member_diary(request):
             calorie["total_intake"] += 500
         elif bmi >= 25.0:
             calorie["total_intake"] -= 500
+
+        nutrient["total_fat"] = 0.25 * activity_level.tdee / 9
+        nutrient["total_protein"] = 0.15 * activity_level.tdee / 4
+        nutrient["total_carbohydrate"] = 0.6 * activity_level.tdee / 4
 
         return JsonResponse({
             "results": {

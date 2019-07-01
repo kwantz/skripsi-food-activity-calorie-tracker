@@ -57,7 +57,7 @@ urlpatterns = [
     path("member/food", views.api_member_food, name="api_member_food"),
     path("member/meal", views.api_member_meal, name="api_member_meal"),
 
-    path("mamber/burnt", views.api_member_burnt, name="api_member_burnt"),
+    path("member/burnt", views.api_member_burnt, name="api_member_burnt"),
 
     path("member/intake", views.api_member_intake, name="api_member_intake"),
     path("member/intake/food", views.api_member_intake_food, name="api_member_intake_food"),

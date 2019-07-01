@@ -20,3 +20,4 @@ from .member.intake import *
 from .member.diary import *
 from .member.history import *
 from .member.activity import *
+from .member.burnt import *

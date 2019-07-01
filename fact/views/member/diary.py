@@ -1,4 +1,4 @@
-from fact.models import CalorieIntake, Food, EatTime, MealDetail, ActivityLevel
+from fact.models import CalorieIntake, Food, EatTime, MealDetail, ActivityLevel, CalorieBurnt
 from django.http import JsonResponse
 from django.db.models import F
 from fact.libraries.jwt import JWT
@@ -25,6 +25,26 @@ def api_member_diary(request):
         date_end = datetime.combine(tomorrow, time())
 
         calorie_intake = CalorieIntake.objects.filter(user=user.id, created_at__gte=date_start, created_at__lte=date_end)
+        calorie_burnt = CalorieBurnt.objects.filter(user=user.id, created_at__gte=date_start, created_at__lte=date_end)
+
+        dict_activity = {}
+        burnt = []
+        for calorie in calorie_burnt:
+            if calorie.activity_label.name in dict_activity:
+                dict_activity[calorie.activity_label.name] = {
+                    "duration": 0,
+                    "calorie": 0
+                }
+            dict_activity[calorie.activity_label.name]["duration"] += calorie.duration
+            dict_activity[calorie.activity_label.name]["calorie"] += calorie.activity_label.met * user.weight * (calorie.duration / 2 / 60)
+
+        for key, value in dict_activity.items():
+            burnt.append({
+                "label": key,
+                "duration": dict_activity[key]["duration"],
+                "calorie": dict_activity[key]["calorie"]
+            })
+
         intake = {
             "breakfast": [],
             "lunch": [],
@@ -99,6 +119,7 @@ def api_member_diary(request):
             "results": {
                 "calorie": calorie,
                 "intake": intake,
+                "burnt": burnt,
                 "nutrient": nutrient,
                 "recommendation_calorie": recommendation_calorie
             }

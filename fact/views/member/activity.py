@@ -24,7 +24,7 @@ def api_member_activity(request):
         json_request = json.loads(request.body)
         activity_label = json_request["label"]
         raw_data = json_request["raw_data"]
-        requested_at = parse_datetime(json_request["requested_at"] + "+0700")
+        requested_at = datetime.now()
 
         features = Features()
         for i in range(len(raw_data)):

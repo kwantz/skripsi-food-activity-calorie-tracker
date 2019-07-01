@@ -46,6 +46,7 @@ urlpatterns = [
     path("member/user", views.api_member_user_detail, name="api_member_user_detail"),
     path("member/diary", views.api_member_diary, name="api_member_diary"),
     path("member/newsfeed", views.api_member_newsfeed, name="api_member_newsfeed"),
+    path("member/activity", views.api_member_activity, name="api_member_activity"),
 
     path("member/article", views.api_member_article, name="api_member_article"),
     path("member/article/<int:article_id>", views.api_member_article_detail, name="api_member_article_detail"),

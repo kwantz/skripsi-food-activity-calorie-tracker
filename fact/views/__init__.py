@@ -19,3 +19,4 @@ from .member.meal import *
 from .member.intake import *
 from .member.diary import *
 from .member.history import *
+from .member.activity import *

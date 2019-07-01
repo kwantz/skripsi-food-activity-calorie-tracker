@@ -13,7 +13,7 @@ from django.utils.dateparse import parse_datetime
 
 
 @csrf_exempt
-def api_activity(request):
+def api_member_activity(request):
     bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
     user = JWT().decode(token)
 

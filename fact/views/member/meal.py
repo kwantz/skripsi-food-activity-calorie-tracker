@@ -91,7 +91,8 @@ def api_member_meal_detail(request, meal_id):
         fats = 0
         proteins = 0
         carbohydrates = 0
-
+        detail = []
+        
         for meal_detail in meal_details:
             calories += meal_detail.food.calorie
             fats += meal_detail.food.fat

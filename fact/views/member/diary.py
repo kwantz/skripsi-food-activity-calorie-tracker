@@ -29,7 +29,7 @@ def api_member_diary(request):
 
         dict_activity = {}
         burnt = []
-        total_calorie_intake = 0
+        total_calorie_burnt = 0
         for calorie in calorie_burnt:
             if calorie.activity_label.name not in dict_activity:
                 dict_activity[calorie.activity_label.name] = {
@@ -38,7 +38,7 @@ def api_member_diary(request):
                 }
             dict_activity[calorie.activity_label.name]["duration"] += calorie.duration
             dict_activity[calorie.activity_label.name]["calorie"] += calorie.activity_label.met * user.weight * (calorie.duration / 2 / 60)
-            total_calorie_intake += calorie.activity_label.met * user.weight * (calorie.duration / 2 / 60)
+            total_calorie_burnt += calorie.activity_label.met * user.weight * (calorie.duration / 2 / 60)
 
         for key, value in dict_activity.items():
             burnt.append({
@@ -111,7 +111,7 @@ def api_member_diary(request):
         calorie = {
             "intake": total_calorie_intake,
             "total_intake": activity_level.tdee,
-            "burnt": 0,
+            "burnt": total_calorie_burnt,
             "total_burnt": activity_level.tdee,
         }
 

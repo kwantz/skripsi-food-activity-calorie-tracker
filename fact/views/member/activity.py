@@ -20,6 +20,14 @@ def api_member_activity(request):
     if user is None:
         return JsonResponse({"message": "Unauthorized"}, status=401)
 
+    if request.method == "GET":
+        label = request.GET.get("id", "")
+        activity = Activity.objects.filter(user=user, label=ActivityLabel.objects.get(id=label)).values('requested_at').annotate(total=Count('requested_at')).order_by('requested_at')
+        return JsonResponse({"results": {
+            "activity": list(activity)
+        }})
+
+
     if request.method == "POST":
         json_request = json.loads(request.body)
         activity_label = json_request["label"]

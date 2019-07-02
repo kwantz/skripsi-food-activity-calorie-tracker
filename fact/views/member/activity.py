@@ -4,7 +4,7 @@ from fact.libraries.features import Features
 from fact.models import Article, Activity, ActivityLabel
 from fact.libraries.jwt import JWT
 from django.http import JsonResponse
-from django.db.models import F
+from django.db.models import F, Count
 from django.db.models.functions import Lower
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime

@@ -56,6 +56,7 @@ urlpatterns = [
 
     path("member/food", views.api_member_food, name="api_member_food"),
     path("member/meal", views.api_member_meal, name="api_member_meal"),
+    path("member/meal/<int:meal_id>", views.api_member_meal_detail, name="api_member_meal_detail"),
 
     path("member/burnt", views.api_member_burnt, name="api_member_burnt"),
 

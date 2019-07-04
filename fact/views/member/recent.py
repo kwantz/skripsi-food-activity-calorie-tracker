@@ -10,7 +10,7 @@ from math import ceil
 
 
 @csrf_exempt
-def api_member_food(request):
+def api_member_recent(request):
     bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
     user = JWT().decode(token)
 
@@ -53,5 +53,5 @@ def api_member_food(request):
             "dates": list_date,
             "foods": dist_date
         }})
-        
+
     return JsonResponse({"message": "Not Found"}, status=404)

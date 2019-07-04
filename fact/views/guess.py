@@ -90,7 +90,7 @@ def api_forgot_password(request):
             user.forgot_password = str(uuid4())
             user.save()
 
-            link = 'http://127.0.0.1:8000/fact/reset-password/' + user.forgot_password
+            link = 'http://103.252.100.230:3000/reset-password/' + user.forgot_password
             message = 'Hi,\n' + \
                       'We\'ve received a request to reset your password. ' + \
                       'If you didn\'t make the request, just ignore this email. ' + \

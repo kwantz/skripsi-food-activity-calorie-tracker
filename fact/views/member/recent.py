@@ -43,8 +43,8 @@ def api_member_recent(request):
                     calorie += (detail.food.calorie * detail.qty)
 
                 dist_date[date].append({
-                    "id": intake.food.id,
-                    "name": intake.food.name,
+                    "id": intake.meal.id,
+                    "name": intake.meal.name,
                     "calorie": calorie,
                     "qty": intake.qty
                 })

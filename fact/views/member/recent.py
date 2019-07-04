@@ -38,7 +38,7 @@ def api_member_recent(request):
 
             if intake.meal is not None:
                 calorie = 0
-                details = MealDetail.objects.filter(meal=calorie.meal)
+                details = MealDetail.objects.filter(meal=intake.meal)
                 for detail in details:
                     calorie += (detail.food.calorie * detail.qty)
 

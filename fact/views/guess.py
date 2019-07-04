@@ -92,9 +92,9 @@ def api_forgot_password(request):
 
             link = 'http://127.0.0.1:8000/fact/reset-password/' + user.forgot_password
             message = 'Hi,\n' + \
-                      'We\'ve received a request to reset your password.' + \
-                      'If you didn\'t make the request, just ignore this email.' + \
-                      'Otherwise, you can reset your password using this link below.' + \
+                      'We\'ve received a request to reset your password. ' + \
+                      'If you didn\'t make the request, just ignore this email. ' + \
+                      'Otherwise, you can reset your password using this link below.\n' + \
                       'Click ' + link + ' to change your password.\n\n' + \
                       'Best Regards,\nErick Kwantan'
 

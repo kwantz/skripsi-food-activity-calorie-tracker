@@ -33,7 +33,8 @@ def api_member_recent(request):
                     "id": intake.food.id,
                     "name": intake.food.name,
                     "calorie": intake.food.calorie,
-                    "qty": intake.qty
+                    "qty": intake.qty,
+                    "type": "food"
                 })
 
             if intake.meal is not None:
@@ -46,7 +47,8 @@ def api_member_recent(request):
                     "id": intake.meal.id,
                     "name": intake.meal.name,
                     "calorie": calorie,
-                    "qty": intake.qty
+                    "qty": intake.qty,
+                    "type": "meal"
                 })
 
         return JsonResponse({"results": {

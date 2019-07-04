@@ -90,7 +90,7 @@ def api_forgot_password(request):
             user.forgot_password = str(uuid4())
             user.save()
 
-            link = 'http://127.0.0.1:8000/fact/reset-password/' + user.forget_password
+            link = 'http://127.0.0.1:8000/fact/reset-password/' + user.forgot_password
             message = 'Hi,\n' + \
                       'We\'ve received a request to reset your password.' + \
                       'If you didn\'t make the request, just ignore this email.' + \
@@ -122,7 +122,7 @@ def api_reset_password(request, forgot_password):
             encrypt_password = bcrypt.hashpw(input_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
             user.password = encrypt_password
-            user.forget_password = None
+            user.forgot_password = None
             user.save()
 
             return JsonResponse({"message": "Success"}, status=200)

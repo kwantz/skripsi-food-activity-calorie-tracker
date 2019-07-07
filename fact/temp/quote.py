@@ -37,6 +37,7 @@ def quote_api(request):
             "total": total,
             "pages": pages,
             "quotes": quote_results,
+            "last_date": (list(quotes)[-1]).created_at
         }})
 
     if request.method == "POST":

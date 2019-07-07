@@ -2,6 +2,7 @@ import json
 from django.http import JsonResponse
 from fact.libraries.jwt import JWT
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 from fact.models import Food, FoodCategory, CalorieIntake, MealDetail, Meal
 from django.db.models import Q
 from django.db.models.functions import Lower
@@ -70,15 +71,19 @@ def food_api(request):
 
         category = FoodCategory.objects.get(id=category)
 
-        Food.objects.create(
-            user=user,
-            food_category=category,
-            fat=fat,
-            name=name,
-            calorie=calorie,
-            protein=protein,
-            carbohydrate=carbohydrate,
-        )
+        try:
+            FoodCategory.objects.get(name=name)
+            return JsonResponse({"message": name + " is already available"})
+        except ObjectDoesNotExist:
+            Food.objects.create(
+                user=user,
+                food_category=category,
+                fat=fat,
+                name=name,
+                calorie=calorie,
+                protein=protein,
+                carbohydrate=carbohydrate,
+            )
 
         return JsonResponse({"message": "Success"})
 
@@ -108,14 +113,18 @@ def food_detail_api(request, food_id):
         fat = json_request["fat"]
         category = json_request["category"]
 
-        food = Food.objects.get(id=food_id)
-        food.fat = fat
-        food.name = name
-        food.calorie = calorie
-        food.protein = protein
-        food.carbohydrate = carbohydrate
-        food.food_category = FoodCategory.objects.get(id=category)
-        food.save()
+        try:
+            FoodCategory.objects.get(~Q(id=food_id), name=name)
+            return JsonResponse({"message": name + " is already available"})
+        except ObjectDoesNotExist:
+            food = Food.objects.get(id=food_id)
+            food.fat = fat
+            food.name = name
+            food.calorie = calorie
+            food.protein = protein
+            food.carbohydrate = carbohydrate
+            food.food_category = FoodCategory.objects.get(id=category)
+            food.save()
 
         return JsonResponse({"message": "Success"})
 

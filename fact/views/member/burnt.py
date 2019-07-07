@@ -51,7 +51,7 @@ def api_member_burnt(request):
 
         for i in range(len(keys)):
             label = ActivityLabel.objects.annotate(lower_name=Lower('name')).get(lower_name=keys[i])
-            if (dict[keys[i]] / 2) > 0:
+            if (dict[keys[i]] / 2) >= 1:
                 CalorieBurnt.objects.create(
                     user=user,
                     activity_label=label,

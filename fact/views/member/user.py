@@ -29,18 +29,18 @@ def api_member_user_detail(request):
         carbohydrate = 0
         calorie_intake = CalorieIntake.objects.filter(user=user.id, created_at__gte=date_start, created_at__lte=date_end)
 
-        for calorie in calorie_intake:
+        for calorie in list(calorie_intake):
             if calorie.meal is not None:
                 details = MealDetail.objects.filter(meal=calorie.meal)
                 for detail in details:
-                    fat += (detail.food.fat * detail.qty)
-                    protein += (detail.food.protein * detail.qty)
-                    carbohydrate += (detail.food.carbohydrate * detail.qty)
+                    fat += (detail.food.fat * detail.qty * calorie.qty)
+                    protein += (detail.food.protein * detail.qty * calorie.qty)
+                    carbohydrate += (detail.food.carbohydrate * detail.qty * calorie.qty)
 
             elif calorie.food is not None:
-                fat += calorie.food.fat
-                protein += calorie.food.protein
-                carbohydrate += calorie.food.carbohydrate
+                fat += calorie.food.fat * calorie.qty
+                protein += calorie.food.protein * calorie.qty
+                carbohydrate += calorie.food.carbohydrate * calorie.qty
 
         activity_level = list(ActivityLevel.objects.filter(user=user).order_by("-created_at"))[0]
 

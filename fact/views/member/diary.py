@@ -37,8 +37,8 @@ def api_member_diary(request):
                     "calorie": 0
                 }
             dict_activity[calorie.activity_label.name]["duration"] += calorie.duration
-            dict_activity[calorie.activity_label.name]["calorie"] += calorie.activity_label.met * user.weight * (calorie.duration / 2 / 3600)
-            total_calorie_burnt += calorie.activity_label.met * user.weight * (calorie.duration / 2 / 3600)
+            dict_activity[calorie.activity_label.name]["calorie"] += calorie.activity_label.met * user.weight * (calorie.duration / 3600)
+            total_calorie_burnt += calorie.activity_label.met * user.weight * (calorie.duration / 3600)
 
         for key, value in dict_activity.items():
             burnt.append({

@@ -24,8 +24,8 @@ def api_member_user_detail(request):
         date_start = datetime.combine(today, time())
         date_end = datetime.combine(tomorrow, time())
 
-        fat = 0,
-        protein = 0,
+        fat = 0
+        protein = 0
         carbohydrate = 0
         calorie_intake = CalorieIntake.objects.filter(user=user.id, created_at__gte=date_start, created_at__lte=date_end)
 

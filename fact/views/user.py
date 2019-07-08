@@ -28,18 +28,19 @@ def api_user(request):
         limit = offset + 30
 
         if status == "blocked":
-            users = User.objects.filter(blocked_at__isnull=False).values('id', 'name', 'gender', 'weight', 'height', 'reason_block') if name == "" else \
-                User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, blocked_at__isnull=False).values('id', 'name', 'gender', 'weight', 'height', 'reason_block')
+            users = User.objects.filter(blocked_at__isnull=False).values('id', 'name', 'gender', 'reason_block') if name == "" else \
+                User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, blocked_at__isnull=False).values('id', 'name', 'gender', 'reason_block')
         else:
-            users = User.objects.filter(blocked_at=None).values('id', 'name', 'gender', 'weight', 'height') if name == "" else \
-                User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, blocked_at=None).values('id', 'name', 'gender', 'weight', 'height')
+            users = User.objects.filter(blocked_at=None).values('id', 'name', 'gender') if name == "" else \
+                User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, blocked_at=None).values('id', 'name', 'gender')
 
         total = len(users)
         pages = ceil(total / 30)
         users = users[offset:limit]
 
         for user in users:
-            user["status"] = body.clasify_bmi(user)
+            temp = User.objects.get(id=user["id"])
+            user["status"] = body.clasify_bmi(temp)
 
         return JsonResponse({"results": {
             "total": total,

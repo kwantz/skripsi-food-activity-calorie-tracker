@@ -22,7 +22,7 @@ def api_check(request):
 def api_user(request):
     if request.method == "GET":
         name = request.GET.get("name", "").lower()
-        status = request.GET.get("status", "").lower()
+        status = request.GET.get("status", "")
         page = int(request.GET.get("page", 1))
         offset = (page - 1) * 30
         limit = offset + 30
@@ -40,7 +40,7 @@ def api_user(request):
                     "status": body.clasify_bmi(user),
                 })
 
-        total = len(users)
+        total = len(results)
         pages = ceil(total / 30)
         users = results[offset:limit]
 

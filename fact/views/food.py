@@ -1,10 +1,11 @@
 import json
-from fact.models import Food, FoodCategory, CalorieIntake, MealDetail, Meal
+from fact.models import Food, FoodCategory, FoodContain, CalorieIntake, MealDetail, Meal
 from fact.libraries.jwt import JWT
 from django.http import JsonResponse
 from django.db.models import F, Q
 from django.db.models.functions import Lower
 from django.views.decorators.csrf import csrf_exempt
+from django.core.exceptions import ObjectDoesNotExist
 from datetime import datetime
 from math import ceil
 
@@ -28,13 +29,27 @@ def api_food(request):
 
         total = len(foods)
         pages = ceil(total / 30)
-        foods = foods.annotate(category=F('food_category__name')) \
-                    .values('id', 'name', 'calorie', 'category')[offset:limit]
+        results = []
+
+        for food in foods:
+            categories = []
+            contains = FoodContain.objects.filter(food=food)
+            for contain in contains:
+                categories.append({
+                    "id": contain.food_category.id,
+                    "name": contain.food_category.name,
+                })
+            results.append({
+                "id": food.id,
+                "name": food.name,
+                "calorie": food.calorie,
+                "category": categories
+            })
 
         return JsonResponse({"results": {
             "total": total,
             "pages": pages,
-            "foods": list(foods),
+            "foods": results[offset:limit],
             "categories": list(categories)
         }})
 
@@ -47,15 +62,21 @@ def api_food(request):
             return JsonResponse({"message": "Unauthorized"}, status=401)
 
         json_request = json.loads(request.body)
-        Food.objects.create(
+
+        food = Food.objects.create(
             user=user,
             fat=json_request["fat"],
             name=json_request["name"],
             calorie=json_request["calorie"],
             protein=json_request["protein"],
             carbohydrate=json_request["carbohydrate"],
-            food_category=FoodCategory.objects.get(id=json_request["category"]),
         )
+
+        for category in json_request["category"]:
+            FoodContain.objects.create(
+                food=food,
+                food_category=FoodCategory.objects.get(id=category),
+            )
 
         return JsonResponse({"message": "Success"})
 
@@ -66,6 +87,15 @@ def api_food(request):
 def api_food_detail(request, food_id):
     if request.method == "GET":
         food = Food.objects.get(id=food_id)
+
+        categories = []
+        contains = FoodContain.objects.filter(food=food)
+        for contain in contains:
+            categories.append({
+                "id": contain.food_category.id,
+                "name": contain.food_category.name,
+            })
+
         return JsonResponse({"results": {
             "id": food.id,
             "fat": food.fat,
@@ -73,7 +103,7 @@ def api_food_detail(request, food_id):
             "calorie": food.calorie,
             "protein": food.protein,
             "carbohydrate": food.carbohydrate,
-            "category": food.food_category.id
+            "category": categories
         }})
 
     if request.method == "PUT":
@@ -84,8 +114,22 @@ def api_food_detail(request, food_id):
         food.calorie = json_request["calorie"]
         food.protein = json_request["protein"]
         food.carbohydrate = json_request["carbohydrate"]
-        food.food_category = FoodCategory.objects.get(id=json_request["category"])
         food.save()
+
+        contains = FoodContain.objects.filter(food=food)
+        for contain in contains:
+            if contain.food_category.id not in json_request["category"]:
+                contain.deleted_at = datetime.now()
+                contain.save()
+
+        for category in json_request["category"]:
+            try:
+                FoodContain.objects.get(food=food, food_category=category)
+            except ObjectDoesNotExist:
+                FoodContain.objects.create(
+                    food=food,
+                    food_category=FoodCategory.objects.get(id=category)
+                )
 
         return JsonResponse({"message": "Success"})
 
@@ -97,132 +141,3 @@ def api_food_detail(request, food_id):
         return JsonResponse({"message": "Success"})
 
     return JsonResponse({"message": "Not Found"}, status=404)
-
-# @csrf_exempt
-# def food_user_api(request):
-#     bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
-#     user = JWT().decode(token)
-#
-#     if user is None:
-#         return JsonResponse({"message": "Unauthorized"}, status=401)
-#
-#     if request.method == "GET":
-#         if request.GET.get('category') is not None:
-#             category = FoodCategory.objects.get(id=request.GET.get('category'))
-#             foods = Food.objects.filter(Q(user=1) | Q(user=user), food_category=category)
-#             meals = []
-#
-#         else:
-#             foods = Food.objects.annotate(lower_name=Lower('name')) \
-#                 .filter(Q(user=1) | Q(user=user), lower_name__contains=request.GET.get('search').lower())
-#
-#             meals = Meal.objects.annotate(lower_name=Lower('name')) \
-#                 .filter(Q(user=1) | Q(user=user), lower_name__contains=request.GET.get('search').lower())
-#
-#         results = []
-#
-#         for food in foods:
-#             results.append({
-#                 "type": "food",
-#                 "id": food.id,
-#                 "name": food.name,
-#                 "fat": food.fat,
-#                 "protein": food.protein,
-#                 "calorie": food.calorie,
-#                 "carbohydrate": food.carbohydrate,
-#             })
-#
-#         for meal in meals:
-#             fat = 0
-#             protein = 0
-#             calorie = 0
-#             carbohydrate = 0
-#
-#             meal_details = MealDetail.objects.filter(meal=meal)
-#             for meal_detail in meal_details:
-#                 fat += meal_detail.food.fat
-#                 protein += meal_detail.food.protein
-#                 calorie += meal_detail.food.calorie
-#                 carbohydrate += meal_detail.food.carbohydrate
-#
-#             results.append({
-#                 "type": "meal",
-#                 "id": meal.id,
-#                 "name": meal.name,
-#                 "fat": fat,
-#                 "protein": protein,
-#                 "calorie": calorie,
-#                 "carbohydrate": carbohydrate,
-#             })
-#
-#         return JsonResponse({"results": results})
-#
-#     return JsonResponse({"message": "Invalid Method"})
-#
-#
-# @csrf_exempt
-# def food_recent_api(request):
-#     bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
-#     user = JWT().decode(token)
-#
-#     if user is None:
-#         return JsonResponse({"message": "Unauthorized"}, status=401)
-#
-#     if request.method == "GET":
-#         list_calorie_intake = CalorieIntake.objects.filter(user=user).order_by("-created_at")[:30]
-#
-#         results = []
-#         temp_date = ""
-#
-#         for calorie_intake in list_calorie_intake:
-#             date = calorie_intake.created_at.date()
-#             date_str = date.year + "-" + date.month + "-"  + date.day
-#
-#             if temp_date != date_str:
-#                 temp_date = date_str
-#                 results.append({
-#                     "title": date_str,
-#                     "data": []
-#                 })
-#
-#             idx = len(results)
-#
-#             if calorie_intake.food is not None:
-#                 results[idx]["data"].append({
-#                     "type": "food",
-#                     "id": calorie_intake.food.id,
-#                     "fat": calorie_intake.food.fat,
-#                     "name": calorie_intake.food.name,
-#                     "protein": calorie_intake.food.protein,
-#                     "calorie": calorie_intake.food.calorie,
-#                     "carbohydrate": calorie_intake.food.carbohydrate,
-#                 })
-#
-#             elif calorie_intake.meal is not None:
-#                 fat = 0
-#                 protein = 0
-#                 calorie = 0
-#                 carbohydrate = 0
-#
-#                 meal_details = MealDetail.objects.filter(meal=calorie_intake.meal)
-#                 for meal_detail in meal_details:
-#                     fat += meal_detail.food.fat
-#                     protein += meal_detail.food.protein
-#                     calorie += meal_detail.food.calorie
-#                     carbohydrate += meal_detail.food.carbohydrate
-#
-#                 results[idx]["data"].append({
-#                     "type": "meal",
-#                     "id": calorie_intake.meal.id,
-#                     "name": calorie_intake.meal.name,
-#                     "fat": fat,
-#                     "protein": protein,
-#                     "calorie": calorie,
-#                     "carbohydrate": carbohydrate,
-#                 })
-#
-#         return JsonResponse({
-#             "results": results
-#         })
-#
-#     return JsonResponse({"message": "Invalid Method"})

@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from fact.libraries.datetime import Datetime
-from fact.models import Activity, ActivityLabel, ActivityLevel, Gender, User, Role, Food, FoodCategory, EatTime
+from fact.models import Activity, ActivityLabel, ActivityLevel, Gender, User, Role, Food, FoodCategory, EatTime, FoodContain
 import bcrypt
 from django.utils.dateparse import parse_datetime
 
@@ -271,14 +271,17 @@ def api_migrate(request):
             [3, "Tapped water", 0, 0, 0, 0]
         ]
         for data in list_data:
-            Food.objects.create(
+            food = Food.objects.create(
                 user=User.objects.get(id=1),
-                food_category=FoodCategory.objects.get(id=data[0]+1),
                 name=data[1],
                 calorie=data[2],
                 protein=data[3],
                 carbohydrate=data[4],
                 fat=data[5]
+            )
+            FoodContain.objects.create(
+                food=food,
+                food_category=FoodCategory.objects.get(id=data[0]+1)
             )
 
         # Init table dataset_personal_label

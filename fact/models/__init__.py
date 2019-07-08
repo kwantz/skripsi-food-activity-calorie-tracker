@@ -7,6 +7,7 @@ from .calorie_burnt import CalorieBurnt
 from .calorie_intake import CalorieIntake
 from .eat_time import EatTime
 from .food import Food
+from .food_contain import FoodContain
 from .food_category import FoodCategory
 from .gender import Gender
 from .meal import Meal
@@ -15,9 +16,3 @@ from .meal_detail import MealDetail
 from .role import Role
 from .user import User
 from .history_search import HistorySearch
-
-# TODO:
-# [ ] show and add Quote
-# [ ] show and add Article
-# [ ] history
-

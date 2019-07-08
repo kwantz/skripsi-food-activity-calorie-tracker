@@ -28,8 +28,8 @@ def api_dashboard(request):
         top_food = dashboard.top_food()
         top_user = dashboard.top_user(date_start, date_end)
 
-        correct = CalorieBurnt.objects.filter(deleted_at__isnull=False)
-        incorrect = CalorieBurnt.objects.filter(deleted_at__isnull=True)
+        incorrect = CalorieBurnt.objects.filter(deleted_at__isnull=False)
+        correct = CalorieBurnt.objects.filter(deleted_at__isnull=True)
 
         list_new_user = []
         new_user = User.objects.filter(role=2, created_at__gte=date_start, created_at__lte=date_end)

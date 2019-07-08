@@ -16,6 +16,7 @@ class User(models.Model):
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     gender = models.ForeignKey(Gender, on_delete=models.CASCADE)
     reason_block = models.CharField(max_length=255, null=True)
+    confirm_email = models.CharField(max_length=255, null=True, default=None)
     forgot_password = models.CharField(max_length=255, null=True, default=None)
     blocked_at = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)

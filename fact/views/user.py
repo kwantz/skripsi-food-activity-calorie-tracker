@@ -27,20 +27,22 @@ def api_user(request):
         offset = (page - 1) * 30
         limit = offset + 30
 
-        if status == "blocked":
-            users = User.objects.filter(blocked_at__isnull=False).values('id', 'name', 'gender', 'reason_block') if name == "" else \
-                User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, blocked_at__isnull=False).values('id', 'name', 'gender', 'reason_block')
-        else:
-            users = User.objects.filter(blocked_at=None).values('id', 'name', 'gender') if name == "" else \
-                User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, blocked_at=None).values('id', 'name', 'gender')
+        users = User.objects.filter(blocked_at=None).values('id', 'name', 'gender') if name == "" else \
+            User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, blocked_at=None).values('id', 'name', 'gender')
+
+        results = []
+        for user in users:
+            if status == "" or status == body.clasify_bmi(user):
+                results.append({
+                    "id": user.id,
+                    "name": user.name,
+                    "gender": user.gender.id ,
+                    "status": body.clasify_bmi(user),
+                })
 
         total = len(users)
         pages = ceil(total / 30)
-        users = users[offset:limit]
-
-        for user in users:
-            temp = User.objects.get(id=user["id"])
-            user["status"] = body.clasify_bmi(temp)
+        users = results[offset:limit]
 
         return JsonResponse({"results": {
             "total": total,

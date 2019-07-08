@@ -22,21 +22,21 @@ def clasify_bmi(user):
     bmi = calculate_bmi(user)
 
     if bmi < 18.5:
-        return "underweight"
+        return "Underweight"
 
     if bmi < 25.0:
-        return "normal"
+        return "Normal"
 
     if bmi < 30.0:
-        return "overweight"
+        return "Overweight"
 
     if bmi < 35.0:
-        return "class I obesity"
+        return "Class I Obesity"
 
     if bmi < 40.0:
-        return "class II obesity"
+        return "Class II Obesity"
 
-    return "class III obesity"
+    return "Class III Obesity"
 
 
 def calculate_bmr(user):

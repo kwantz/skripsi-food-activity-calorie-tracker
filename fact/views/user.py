@@ -28,11 +28,11 @@ def api_user(request):
         limit = offset + 30
 
         if status == "blocked":
-            users = User.objects.filter(blocked_at__isnull=False).values('id', 'name', 'gender', 'reason_block') if name == "" else \
-                User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, blocked_at__isnull=False).values('id', 'name', 'gender', 'reason_block')
+            users = User.objects.filter(blocked_at__isnull=False).values('id', 'name', 'gender', 'weight', 'height', 'reason_block') if name == "" else \
+                User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, blocked_at__isnull=False).values('id', 'name', 'gender', 'weight', 'height', 'reason_block')
         else:
-            users = User.objects.filter(blocked_at=None).values('id', 'name', 'gender') if name == "" else \
-                User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, blocked_at=None).values('id', 'name', 'gender')
+            users = User.objects.filter(blocked_at=None).values('id', 'name', 'gender', 'weight', 'height') if name == "" else \
+                User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, blocked_at=None).values('id', 'name', 'gender', 'weight', 'height')
 
         total = len(users)
         pages = ceil(total / 30)

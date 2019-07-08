@@ -79,6 +79,10 @@ def api_user_detail(request, user_id):
             "email": user.email,
             "weight": user.weight,
             "height": user.height,
+            "gender": {
+                "id": user.gender.id,
+                "name": user.gender.name,
+            },
             "category": body.clasify_bmi(user),
             "activity": activity_level[0].level if len(activity_level) != 0 else "none",
             "carbohydrate": carbohydrate,

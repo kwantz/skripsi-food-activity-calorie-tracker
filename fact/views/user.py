@@ -27,8 +27,8 @@ def api_user(request):
         offset = (page - 1) * 30
         limit = offset + 30
 
-        users = User.objects.filter(blocked_at=None).values('id', 'name', 'gender') if name == "" else \
-            User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, blocked_at=None).values('id', 'name', 'gender')
+        users = User.objects.filter(blocked_at=None) if name == "" else \
+            User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, blocked_at=None)
 
         results = []
         for user in users:

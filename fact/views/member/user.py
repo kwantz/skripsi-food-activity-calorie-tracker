@@ -8,6 +8,8 @@ from datetime import datetime, timedelta, time
 from math import ceil
 from fact.libraries.jwt import JWT
 from fact.libraries.body import clasify_bmi, calculate_bmi, clasify_activity_factor
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 
 
 @csrf_exempt
@@ -69,6 +71,11 @@ def api_member_user_detail(request):
         input_birth_year = json_request.get("birth_year", user.birth_year)
 
         gender = Gender.objects.get(id=input_gender)
+
+        try:
+            validate_email(input_email)
+        except ValidationError:
+            return JsonResponse({"message": "Invalid email"}, status=400)
 
         if "password" in json_request:
             input_password = json_request["password"]

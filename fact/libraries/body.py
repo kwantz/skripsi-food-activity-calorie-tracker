@@ -66,13 +66,13 @@ def calculate_bmr(user):
 def calculate_activity_factor(user, level):
     activity_factor = -1
 
-    if level == "low":
+    if level == "Low":
         activity_factor = 1.56 if user.gender.id == 1 else 1.55
 
-    elif level == "medium":
+    elif level == "Medium":
         activity_factor = 1.76 if user.gender.id == 1 else 1.70
 
-    elif level == "high":
+    elif level == "High":
         activity_factor = 2.10 if user.gender.id == 1 else 2.00
 
     return activity_factor
@@ -80,11 +80,11 @@ def calculate_activity_factor(user, level):
 
 def clasify_activity_factor(pal):
     if pal < 1.70:
-        return "low"
+        return "Low"
 
     elif pal < 2.00:
-        return "medium"
+        return "Medium"
 
     else:
-        return "high"
+        return "High"
 

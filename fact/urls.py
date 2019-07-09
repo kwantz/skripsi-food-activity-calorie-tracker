@@ -9,6 +9,7 @@ urlpatterns = [
     path("register", views.api_register, name="api_register"),
     path("forgot-password", views.api_forgot_password, name="api_forgot_password"),
     path("reset-password/<forgot_password>", views.api_reset_password, name="api_reset_password"),
+    path("confirm-email/<confirm_email>", views.api_confirm_email, name="api_confirm_email"),
 
     path("image/upload", views.api_upload, name="api_upload"),
     path("image/<image>", views.api_image, name="api_image"),

@@ -63,7 +63,7 @@ def api_register(request):
             role = Role.objects.get(id=2)
             gender = Gender.objects.get(id=1)
             encrypt_password = bcrypt.hashpw(input_password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-            User.objects.create(
+            user = User.objects.create(
                 name=input_name,
                 email=input_email,
                 password=encrypt_password,
@@ -72,9 +72,35 @@ def api_register(request):
                 birth_year=1000,
                 role=role,
                 gender=gender,
+                confirm_email=str(uuid4())
             )
+            link = 'http://103.252.100.230:3000/after-sign-up?key=' + user.confirm_email
+            message = 'Hi,\n' + \
+                      'We\'ve received a request to confirm your email. ' + \
+                      'If you didn\'t make the request, just ignore this email. ' + \
+                      'Otherwise, you can confirm your email using this link below.\n' + \
+                      'Click ' + link + ' to confirm your email.\n\n' + \
+                      'Best Regards,\nErick Kwantan'
+
+            send_mail('Email Confirmation', message, 'erickkwantantz123@gmail.com', [user.email])
 
         return JsonResponse({"message": "Success"})
+
+    return JsonResponse({"message": "Not Found"}, status=404)
+
+
+@csrf_exempt
+def api_confirm_email(request, confirm_email):
+    if request.method == "POST":
+        try:
+            user = User.objects.get(confirm_email=confirm_email)
+            user.forgot_password = None
+            user.save()
+
+            return JsonResponse({"message": "Success"}, status=200)
+
+        except ObjectDoesNotExist:
+            return JsonResponse({"message": "Invalid Forgot Password"}, status=400)
 
     return JsonResponse({"message": "Not Found"}, status=404)
 
@@ -90,7 +116,7 @@ def api_forgot_password(request):
             user.forgot_password = str(uuid4())
             user.save()
 
-            link = 'http://103.252.100.230:3000/reset-password/' + user.forgot_password
+            link = 'http://103.252.100.230:3000/reset-password?key=' + user.forgot_password
             message = 'Hi,\n' + \
                       'We\'ve received a request to reset your password. ' + \
                       'If you didn\'t make the request, just ignore this email. ' + \

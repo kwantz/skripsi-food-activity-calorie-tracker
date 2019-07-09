@@ -94,13 +94,20 @@ def api_confirm_email(request, confirm_email):
     if request.method == "POST":
         try:
             user = User.objects.get(confirm_email=confirm_email)
-            user.forgot_password = None
+            user.confirm_email = None
             user.save()
 
-            return JsonResponse({"message": "Success"}, status=200)
+            return JsonResponse({"results": {
+                "role": user.role.id,
+                "token": JWT().encode({
+                    "id": user.id,
+                    "name": user.name,
+                    "email": user.email
+                })
+            }})
 
         except ObjectDoesNotExist:
-            return JsonResponse({"message": "Invalid Forgot Password"}, status=400)
+            return JsonResponse({"message": "Invalid Email"}, status=400)
 
     return JsonResponse({"message": "Not Found"}, status=404)
 

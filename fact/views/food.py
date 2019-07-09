@@ -23,8 +23,6 @@ def api_food(request):
         foods = Food.objects.all() if name == "" else \
             Food.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name)
 
-        total = len(foods)
-        pages = ceil(total / 30)
         results = []
 
         for food in foods:
@@ -48,6 +46,9 @@ def api_food(request):
             except ObjectDoesNotExist:
                 continue
 
+        total = len(results)
+        pages = ceil(total / 30)
+        
         return JsonResponse({"results": {
             "total": total,
             "pages": pages,

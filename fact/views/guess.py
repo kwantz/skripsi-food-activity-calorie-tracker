@@ -23,6 +23,7 @@ def api_login(request):
             if bcrypt.checkpw(input_password.encode("utf-8"), hashed):
                 return JsonResponse({"results": {
                     "role": user.role.id,
+                    "name": user.name,
                     "token": JWT().encode({
                         "id": user.id,
                         "name": user.name,
@@ -99,6 +100,7 @@ def api_confirm_email(request, confirm_email):
 
             return JsonResponse({"results": {
                 "role": user.role.id,
+                "name": user.name,
                 "token": JWT().encode({
                     "id": user.id,
                     "name": user.name,

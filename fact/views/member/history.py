@@ -142,9 +142,9 @@ def api_member_history_burnt(request):
         return JsonResponse({"results": {
             "week": week_calorie_result,
             "month": month_calorie_result,
-            "most_active":
-            "least_active":
-            "activity": 
+            # "most_active":
+            # "least_active":
+            # "activity":
             "level": activity_level.level
         }})
 

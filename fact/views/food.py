@@ -19,7 +19,7 @@ def api_food(request):
         offset = (page - 1) * 30
         limit = offset + 30
 
-        categories = FoodCategory.objects.values('id', 'name')
+        list_category = FoodCategory.objects.values('id', 'name')
         if category == 0:
             foods = Food.objects.all() if name == "" else \
                 Food.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name)
@@ -50,7 +50,7 @@ def api_food(request):
             "total": total,
             "pages": pages,
             "foods": results[offset:limit],
-            "categories": list(categories)
+            "categories": list(list_category)
         }})
 
     if request.method == "POST":

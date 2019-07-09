@@ -40,7 +40,7 @@ def api_migrate(request):
         )
 
         # Init table food_category
-        list_data = ["Beef", "Bread & Bakery", "Dairy & Eggs", "Drinks"]
+        list_data = ["My Custom", "Beef", "Bread & Bakery", "Dairy & Eggs", "Drinks"]
         for data in list_data:
             FoodCategory.objects.create(name=data)
 
@@ -281,15 +281,15 @@ def api_migrate(request):
             )
             FoodContain.objects.create(
                 food=food,
-                food_category=FoodCategory.objects.get(id=data[0]+1)
+                food_category=FoodCategory.objects.get(id=data[0]+2)
             )
 
         # Init table dataset_personal_label
-        list_data = ["STANDING", "WALKING", "RUNNING", "STAIRS", "ON_TRAIN"]
+        list_data = ["Standing", "Walking", "Running", "Stairs", "Sitting"]
         for data in list_data:
             ActivityLabel.objects.create(
                 name=data,
-                met=0
+                met=1
             )
 
         # Init table dataset_common

@@ -1,5 +1,5 @@
 import json
-from fact.models import Food, FoodCategory
+from fact.models import Food, FoodCategory, FoodContain
 from django.http import JsonResponse
 from django.db.models.functions import Lower
 from django.views.decorators.csrf import csrf_exempt
@@ -26,7 +26,7 @@ def api_food_category(request):
 
         results = []
         for category in categories:
-            foods = Food.objects.filter(food_category=category.id)
+            foods = FoodContain.objects.filter(food_category=category.id)
             results.append({
                 "id": category.id,
                 "name": category.name,

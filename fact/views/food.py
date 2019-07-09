@@ -19,38 +19,41 @@ def api_food(request):
         offset = (page - 1) * 30
         limit = offset + 30
 
-        categories = FoodCategory.objects.values('id', 'name')
-        if category == 0:
-            foods = Food.objects.all() if name == "" else \
-                Food.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name)
-        else:
-            foods = Food.objects.filter(food_category=category) if name == "" else \
-                Food.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, food_category=category)
+        list_category = FoodCategory.objects.values('id', 'name')
+        foods = Food.objects.all() if name == "" else \
+            Food.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name)
 
-        total = len(foods)
-        pages = ceil(total / 30)
         results = []
 
         for food in foods:
-            categories = []
-            contains = FoodContain.objects.filter(food=food)
-            for contain in contains:
-                categories.append({
-                    "id": contain.food_category.id,
-                    "name": contain.food_category.name,
+            try:
+                if category != 0:
+                    FoodContain.objects.get(food=food, food_category=category)
+                
+                categories = []
+                contains = FoodContain.objects.filter(food=food)
+                for contain in contains:
+                    categories.append({
+                        "id": contain.food_category.id,
+                        "name": contain.food_category.name,
+                    })
+                results.append({
+                    "id": food.id,
+                    "name": food.name,
+                    "calorie": food.calorie,
+                    "category": categories
                 })
-            results.append({
-                "id": food.id,
-                "name": food.name,
-                "calorie": food.calorie,
-                "category": categories
-            })
+            except ObjectDoesNotExist:
+                continue
 
+        total = len(results)
+        pages = ceil(total / 30)
+        
         return JsonResponse({"results": {
             "total": total,
             "pages": pages,
             "foods": results[offset:limit],
-            "categories": list(categories)
+            "categories": list(list_category)
         }})
 
     if request.method == "POST":

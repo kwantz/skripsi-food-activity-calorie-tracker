@@ -24,7 +24,7 @@ def api_food(request):
             Food.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name)
 
         results = []
-        return JsonResponse({"message": name + " is already available in database.", "debug": list(foods)}, status=400)
+        return JsonResponse({"message": name + " is already available in database.", "debug": list(foods.values('id', 'name'))}, status=400)
         for food in foods:
             try:
                 if category != 0:
@@ -70,7 +70,7 @@ def api_food(request):
 
         if len(have_data) > 0:
             return JsonResponse({"message": json_request["name"] + " is already available in database.", "debug": list(have_data)}, status=400)
-
+        whatblabla = 1 / 0
         food = Food.objects.create(
             user=user,
             fat=json_request["fat"],

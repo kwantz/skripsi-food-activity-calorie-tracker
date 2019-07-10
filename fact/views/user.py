@@ -30,7 +30,7 @@ def api_user(request):
         limit = offset + 30
 
         users = User.objects.filter(blocked_at=None) if name == "" else \
-            User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, blocked_at=None)
+            User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name.lower(), blocked_at=None)
 
         results = []
         for user in users:

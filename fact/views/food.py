@@ -21,7 +21,7 @@ def api_food(request):
 
         list_category = FoodCategory.objects.values('id', 'name')
         foods = Food.objects.all() if name == "" else \
-            Food.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name)
+            Food.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name.lower())
 
         results = []
         for food in foods:
@@ -64,12 +64,12 @@ def api_food(request):
             return JsonResponse({"message": "Unauthorized"}, status=401)
 
         json_request = json.loads(request.body)
-        have_data = Food.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains = json_request["name"]).values('id', 'name')
+        have_data = Food.objects.annotate(lower_name=Lower("name")).filter(lower_name__exact = json_request["name"].lower()).values('id', 'name')
         return JsonResponse({"message": json_request["name"] + " is already available in database.", "debug": list(have_data)}, status=400)
 
         if len(have_data) > 0:
             return JsonResponse({"message": json_request["name"] + " is already available in database.", "debug": list(have_data)}, status=400)
-        whatblabla = 1 / 0
+            
         food = Food.objects.create(
             user=user,
             fat=json_request["fat"],
@@ -115,7 +115,7 @@ def api_food_detail(request, food_id):
 
     if request.method == "PUT":
         json_request = json.loads(request.body)
-        have_data = Food.objects.annotate(lower_name=Lower("name")).filter(~Q(id=food_id), lower_name__contains = json_request["name"])
+        have_data = Food.objects.annotate(lower_name=Lower("name")).filter(~Q(id=food_id), lower_name__exact = json_request["name"].lower()).values('id', 'name')
 
         if len(have_data) > 0:
             return JsonResponse({"message": json_request["name"] + " is already available in database."}, status=400)

@@ -18,7 +18,7 @@ def api_article(request):
         limit = offset + 30
 
         articles = Article.objects.all() if title == "" else \
-            Article.objects.annotate(lower_title=Lower("title")).filter(lower_title__contains=title)
+            Article.objects.annotate(lower_title=Lower("title")).filter(lower_title__contains=title.lower())
 
         total = len(articles)
         pages = ceil(total / 30)
@@ -39,7 +39,7 @@ def api_article(request):
             return JsonResponse({"message": "Unauthorized"}, status=401)
 
         json_request = json.loads(request.body)
-        have_data = Article.objects.annotate(lower_title=Lower("title")).filter(lower_title__contains = json_request["title"])
+        have_data = Article.objects.annotate(lower_title=Lower("title")).filter(lower_title__exact = json_request["title"].lower()).values('id', 'title')
 
         if len(have_data) > 0:
             return JsonResponse({"message": json_request["title"] + " is already available in database."}, status=400)
@@ -70,7 +70,7 @@ def api_article_detail(request, article_id):
 
     if request.method == "PUT":
         json_request = json.loads(request.body)
-        have_data = Article.objects.annotate(lower_title=Lower("title")).filter(~Q(id=article_id), lower_title__contains = json_request["title"])
+        have_data = Article.objects.annotate(lower_title=Lower("title")).filter(~Q(id=article_id), lower_title__exact = json_request["title"].lower()).values('id', 'title')
 
         if len(have_data) > 0:
             return JsonResponse({"message": json_request["title"] + " is already available in database."}, status=400)

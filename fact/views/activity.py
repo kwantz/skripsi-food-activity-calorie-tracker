@@ -16,7 +16,7 @@ def api_activity(request):
         limit = offset + 30
 
         activities = ActivityLabel.objects.all() if name == "" or name == "all" else \
-            ActivityLabel.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains = name)
+            ActivityLabel.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains = name.lower())
 
         total = len(activities)
         pages = ceil(total / 30)
@@ -33,7 +33,7 @@ def api_activity(request):
 
     if request.method == "POST":
         json_request = json.loads(request.body)
-        have_data = ActivityLabel.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains = json_request["name"])
+        have_data = ActivityLabel.objects.annotate(lower_name=Lower("name")).filter(lower_name__exact = json_request["name"].lower()).values('id', 'name')
 
         if len(have_data) > 0:
             return JsonResponse({"message": json_request["name"] + " is already available in database."}, status=400)
@@ -52,7 +52,7 @@ def api_activity(request):
 def api_activity_detail(request, activity_id):
     if request.method == "PUT":
         json_request = json.loads(request.body)
-        have_data = ActivityLabel.objects.annotate(lower_name=Lower("name")).filter(~Q(id=activity_id), lower_name__contains = json_request["name"])
+        have_data = ActivityLabel.objects.annotate(lower_name=Lower("name")).filter(~Q(id=activity_id), lower_name__exact = json_request["name"].lower()).values('id', 'name')
 
         if len(have_data) > 0:
             return JsonResponse({"message": json_request["name"] + " is already available in database."}, status=400)

@@ -16,7 +16,7 @@ def api_food_category(request):
         limit = offset + 30
 
         categories = FoodCategory.objects.all() if name == "" or name == "all" else \
-            FoodCategory.objects.annotate(lower_name=Lower('name')).filter(lower_name__contains=name)
+            FoodCategory.objects.annotate(lower_name=Lower('name')).filter(lower_name__contains=name.lower())
 
         total = len(categories)
         pages = ceil(total / 30)
@@ -41,7 +41,7 @@ def api_food_category(request):
 
     if request.method == "POST":
         json_request = json.loads(request.body)
-        have_data = FoodCategory.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains = json_request["name"])
+        have_data = FoodCategory.objects.annotate(lower_name=Lower("name")).filter(lower_name__exact = json_request["name"].lower()).values('id', 'name')
 
         if len(have_data) > 0:
             return JsonResponse({"message": json_request["name"] + " is already available in database."}, status=400)
@@ -56,7 +56,7 @@ def api_food_category(request):
 def api_food_category_detail(request, food_category_id):
     if request.method == "PUT":
         json_request = json.loads(request.body)
-        have_data = FoodCategory.objects.annotate(lower_name=Lower("name")).filter(~Q(id=food_category_id), lower_name__contains = json_request["name"])
+        have_data = FoodCategory.objects.annotate(lower_name=Lower("name")).filter(~Q(id=food_category_id), lower_name__exact = json_request["name"].lower()).values('id', 'name')
 
         if len(have_data) > 0:
             return JsonResponse({"message": json_request["name"] + " is already available in database."}, status=400)

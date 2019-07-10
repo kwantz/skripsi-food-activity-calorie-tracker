@@ -50,7 +50,7 @@ def api_register(request):
         input_re_password = json_request["re_password"]
 
         if input_re_password != input_password:
-            return JsonResponse({"message": "Invalid password"}, status=400)
+            return JsonResponse({"message": "Password and Confirm Password should be same"}, status=400)
 
         try:
             validate_email(input_email)
@@ -150,7 +150,7 @@ def api_reset_password(request, forgot_password):
         input_re_password = json_request["re_password"]
 
         if input_re_password != input_password:
-            return JsonResponse({"message": "Invalid password"}, status=400)
+            return JsonResponse({"message": "Password and Confirm Password should be same"}, status=400)
 
         try:
             user = User.objects.get(forgot_password=forgot_password)

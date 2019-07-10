@@ -50,7 +50,7 @@ def register(request):
         print(input_re_password, input_password)
 
         if input_re_password != input_password:
-            return JsonResponse({"message": "Invalid password"})
+            return JsonResponse({"message": "Password and Confirm Password should be same"})
 
         try:
             validate_email(input_email)
@@ -168,7 +168,7 @@ def user_detail_api(request, user_id):
             input_re_password = json_request["re_password"]
 
             if input_re_password != input_password:
-                return JsonResponse({"message": "Invalid password"})
+                return JsonResponse({"message": "Password and Confirm Password should be same"})
 
             input_password = bcrypt.hashpw(json_request["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 

@@ -33,6 +33,11 @@ def api_activity(request):
 
     if request.method == "POST":
         json_request = json.loads(request.body)
+        have_data = ActivityLabel.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains = json_request["name"])
+
+        if len(have_data) > 0:
+            return JsonResponse({"message": json_request["name"] + " is already available in database."}, status=400)
+
         ActivityLabel.objects.create(
             met=json_request["met"],
             name=json_request["name"]
@@ -47,6 +52,11 @@ def api_activity(request):
 def api_activity_detail(request, activity_id):
     if request.method == "PUT":
         json_request = json.loads(request.body)
+        have_data = ActivityLabel.objects.annotate(lower_name=Lower("name")).filter(~Q(id=activity_id), lower_name__contains = json_request["name"])
+
+        if len(have_data) > 0:
+            return JsonResponse({"message": json_request["name"] + " is already available in database."}, status=400)
+
         activity = ActivityLabel.objects.get(id=activity_id)
         activity.met = json_request["met"]
         activity.name = json_request["name"]

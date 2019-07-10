@@ -39,6 +39,11 @@ def api_article(request):
             return JsonResponse({"message": "Unauthorized"}, status=401)
 
         json_request = json.loads(request.body)
+        have_data = Article.objects.annotate(lower_title=Lower("title")).filter(lower_title__contains = json_request["title"])
+
+        if len(have_data) > 0:
+            return JsonResponse({"message": json_request["title"] + " is already available in database."}, status=400)
+
         Article.objects.create(
             user=user,
             title=json_request["title"],
@@ -65,6 +70,11 @@ def api_article_detail(request, article_id):
 
     if request.method == "PUT":
         json_request = json.loads(request.body)
+        have_data = Article.objects.annotate(lower_title=Lower("title")).filter(~Q(id=article_id), lower_title__contains = json_request["title"])
+
+        if len(have_data) > 0:
+            return JsonResponse({"message": json_request["title"] + " is already available in database."}, status=400)
+
         article = Article.objects.get(id=article_id)
         article.title = json_request["title"]
         article.image = json_request["image"]

@@ -65,6 +65,10 @@ def api_food(request):
             return JsonResponse({"message": "Unauthorized"}, status=401)
 
         json_request = json.loads(request.body)
+        have_data = Food.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains = json_request["name"])
+
+        if len(have_data) > 0:
+            return JsonResponse({"message": json_request["name"] + " is already available in database."}, status=400)
 
         food = Food.objects.create(
             user=user,
@@ -111,6 +115,11 @@ def api_food_detail(request, food_id):
 
     if request.method == "PUT":
         json_request = json.loads(request.body)
+        have_data = Food.objects.annotate(lower_name=Lower("name")).filter(~Q(id=food_id), lower_name__contains = json_request["name"])
+
+        if len(have_data) > 0:
+            return JsonResponse({"message": json_request["name"] + " is already available in database."}, status=400)
+
         food = Food.objects.get(id=food_id)
         food.fat = json_request["fat"]
         food.name = json_request["name"]

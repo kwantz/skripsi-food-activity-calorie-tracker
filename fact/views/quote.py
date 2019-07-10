@@ -17,7 +17,7 @@ def api_quote(request):
         quotes = Quote.objects.all()
         total = len(quotes)
         pages = ceil(total / 30)
-        date = list(quotes)[-1].created_at
+        date = list(quotes)[-1].created_at if total > 0 else ''
         quotes = quotes.values('id', 'desc', 'author')[offset:limit]
 
         return JsonResponse({ "results": {

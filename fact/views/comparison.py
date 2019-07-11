@@ -5,7 +5,7 @@ from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 from fact.libraries.jwt import JWT
-from fact.libraries.dataset import get_train_features, get_train_labels
+from fact.libraries.dataset import get_train_features, get_train_labels, get_test_labels, get_test_features
 from fact.libraries.features import Features
 from fact.libraries.machinelearning import ELM, KELM, RKELM
 from django.http import JsonResponse
@@ -50,15 +50,15 @@ def api_comparison(request):
         end_training_time = time.time()
 
         start_testing_time = time.time()
-        predict = list(clasification.predict(data_test))
+        predict = list(clasification.predict(get_test_features()))
         end_testing_time = time.time()
 
         correct = 0
         incorrect = 0
-        predict.sort()
+        # predict.sort()
+        test_label = list(get_test_labels())
         for i in range(len(predict)):
-            key = train_label[int(predict[i])]
-            if key == label:
+            if int(test_label[i]) == int(predict[i]):
                 correct += 1
             else:
                 incorrect += 1

@@ -26,7 +26,12 @@ def api_member_food(request):
 
         if name == "all":
             results = []
-            contains = FoodContain.objects.filter(Q(food__user=1) | Q(food__user=user.id), food_category=category)
+
+            if category == 0:
+                contains = FoodContain.objects.filter(Q(food__user=1) | Q(food__user=user.id))
+            else:
+                contains = FoodContain.objects.filter(Q(food__user=1) | Q(food__user=user.id), food_category=category)
+
             for contain in contains:
                 results.append({
                     'id': contain.food.id, 

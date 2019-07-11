@@ -26,7 +26,7 @@ def api_member_food(request):
 
         if name == "all":
             results = []
-            contains = FoodContain.objects.filter(Q(user=1) | Q(user=user.id), food_category=category)
+            contains = FoodContain.objects.filter(Q(food__user=1) | Q(food__user=user.id), food_category=category)
             for contain in contains:
                 results.append({
                     'id': contain.food.id, 
@@ -52,7 +52,7 @@ def api_member_food(request):
 
         else:
             results = []
-            contains = FoodContain.objects.annotate(lower_name=Lower("food__name")).filter(Q(user=1) | Q(user=user.id), lower_name__contains=name.lower(), food_category=category)
+            contains = FoodContain.objects.annotate(lower_name=Lower("food__name")).filter(Q(food__user=1) | Q(food__user=user.id), lower_name__contains=name.lower(), food_category=category)
             for contain in contains[offset:limit]:
                 results.append({
                     'id': contain.food.id, 

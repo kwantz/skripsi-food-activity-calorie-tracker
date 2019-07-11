@@ -28,7 +28,7 @@ def api_member_meal(request):
         if name == 'all':
             meals = Meal.objects.filter(Q(user=1) | Q(user=user.id))
         else:    
-            meals = Meal.objects.annotate(lower_name=Lower("name")).filter(Q(user=1) | Q(user=user.id), lower_name__contains=name)[offset:limit]
+            meals = Meal.objects.annotate(lower_name=Lower("name")).filter(Q(user=1) | Q(user=user.id), lower_name__contains=name.lower())[offset:limit]
 
         for meal in meals:
             detail = []

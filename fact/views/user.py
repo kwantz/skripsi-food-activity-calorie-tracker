@@ -30,7 +30,7 @@ def api_user(request):
         limit = offset + 30
 
         users = User.objects.filter(blocked_at=None) if name == "" else \
-            User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name, blocked_at=None)
+            User.objects.annotate(lower_name=Lower("name")).filter(lower_name__contains=name.lower(), blocked_at=None)
 
         results = []
         for user in users:
@@ -117,7 +117,7 @@ def api_user_detail(request, user_id):
             input_re_password = json_request["re_password"]
 
             if input_re_password != input_password:
-                return JsonResponse({"message": "Invalid password"})
+                return JsonResponse({"message": "Password and Confirm Password should be same"})
 
             input_password = bcrypt.hashpw(json_request["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 

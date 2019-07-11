@@ -1,5 +1,5 @@
 import json
-from fact.models import Food, FoodCategory, CalorieIntake, MealDetail, Meal
+from fact.models import Food, FoodCategory, CalorieIntake, MealDetail, Meal, FoodContain
 from fact.libraries.jwt import JWT
 from django.http import JsonResponse
 from django.db.models import F, Q
@@ -24,18 +24,52 @@ def api_member_food(request):
         offset = (page - 1) * 10
         limit = offset + 10
 
-        if category == 0:
-            foods = Food.objects.annotate(lower_name=Lower("name")).filter(Q(user=1) | Q(user=user.id), lower_name__contains=name)
-        else:
-            foods = Food.objects.annotate(lower_name=Lower("name")).filter(Q(user=1) | Q(user=user.id), lower_name__contains=name, food_category=category)
-
-        foods = foods.values('id', 'name', 'calorie', 'fat', 'protein', 'carbohydrate')[offset:limit]
-
         if name == "all":
-            foods = Food.objects.filter(Q(user=1) | Q(user=user.id), food_category=category).values('id', 'name', 'calorie', 'fat', 'protein', 'carbohydrate')
+            results = []
+
+            if category == 0:
+                contains = FoodContain.objects.filter(Q(food__user=1) | Q(food__user=user.id))
+            else:
+                contains = FoodContain.objects.filter(Q(food__user=1) | Q(food__user=user.id), food_category=category)
+
+            for contain in contains:
+                results.append({
+                    'id': contain.food.id, 
+                    'name': contain.food.name, 
+                    'calorie': contain.food.calorie, 
+                    'fat': contain.food.fat, 
+                    'protein': contain.food.protein, 
+                    'carbohydrate': contain.food.carbohydrate
+                })
+
+        elif category == 0:
+            results = []
+            foods = Food.objects.annotate(lower_name=Lower("name")).filter(Q(user=1) | Q(user=user.id), lower_name__contains=name.lower())
+            for food in foods[offset:limit]:
+                results.append({
+                    'id': food.id, 
+                    'name': food.name, 
+                    'calorie': food.calorie, 
+                    'fat': food.fat, 
+                    'protein': food.protein, 
+                    'carbohydrate': food.carbohydrate
+                })
+
+        else:
+            results = []
+            contains = FoodContain.objects.annotate(lower_name=Lower("food__name")).filter(Q(food__user=1) | Q(food__user=user.id), lower_name__contains=name.lower(), food_category=category)
+            for contain in contains[offset:limit]:
+                results.append({
+                    'id': contain.food.id, 
+                    'name': contain.food.name, 
+                    'calorie': contain.food.calorie, 
+                    'fat': contain.food.fat, 
+                    'protein': contain.food.protein, 
+                    'carbohydrate': contain.food.carbohydrate
+                })
 
         return JsonResponse({"results": {
-            "foods": list(foods),
+            "foods": results,
         }})
 
     if request.method == "POST":

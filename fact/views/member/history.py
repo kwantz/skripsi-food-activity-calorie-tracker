@@ -157,7 +157,7 @@ def api_member_history_burnt(request):
             "month": month_calorie_result,
             # "most_active":
             # "least_active":
-            "most_active": list(calorie_burnt_month)[0],
+            "most_active": list(calorie_burnt_month),
             "activity_level": list_activity_level,
             "level": activity_level.level
         }})

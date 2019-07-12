@@ -56,12 +56,12 @@ def api_member_burnt(request):
                     user=user,
                     activity_label=label,
                     start_track = requested_at,
-                    duration = dict[keys[i]] / 2
+                    duration = int(dict[keys[i]] / 2)
                 )
                 results.append({
                     "label": keys[i],
                     "time": dict[keys[i]] / 2,
-                    "burnt": label.met * user.weight * (dict[keys[i]] / 2 / 3600)
+                    "burnt": label.met * user.weight * (int(dict[keys[i]] / 2) / 3600)
                 })
 
         return JsonResponse({

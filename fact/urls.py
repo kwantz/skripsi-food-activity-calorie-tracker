@@ -67,6 +67,7 @@ urlpatterns = [
     path("member/intake/meal", views.api_member_intake_meal, name="api_member_intake_meal"),
 
     path("member/history/intake", views.api_member_history_intake, name="api_member_history_intake"),
+    path("member/history/burnt", views.api_member_history_burnt, name="api_member_history_burnt"),
 
     # path("user", temp.user, name="user"),
 

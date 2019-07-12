@@ -149,7 +149,7 @@ def api_member_history_burnt(request):
         for key, val in dist_activity_level.items():
             list_activity_level.append((val, key))
 
-        list_activity_level.sort(reversed=True)
+        list_activity_level.sort(reverse=True)
 
         week_calorie_result = list(reversed(week_calorie_result))
         return JsonResponse({"results": {

@@ -129,10 +129,10 @@ def api_member_history_burnt(request):
                 for calorie in calorie_burnt:
                     week_calorie_result[i] += calorie.activity_label.met * user.weight * calorie.duration / 3600
 
-                    date = calorie.created_at.strftime('%Y-%m-%d')
-                    if date not in dist_activity_level:
-                        dist_activity_level[date] = 0
-                    dist_activity_level[date] += calorie.duration
+                    datestr = calorie.created_at.strftime('%Y-%m-%d')
+                    if datestr not in dist_activity_level:
+                        dist_activity_level[datestr] = 0
+                    dist_activity_level[datestr] += calorie.duration
 
             month_calorie = 0
             for calorie in calorie_burnt:

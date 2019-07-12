@@ -1,6 +1,6 @@
 from fact.models import Quote, Article, CalorieIntake, MealDetail, ActivityLevel, CalorieBurnt
 from django.http import JsonResponse
-from django.db.models import F
+from django.db.models import F, Sum
 from fact.libraries.jwt import JWT
 from datetime import datetime, timedelta, time, date
 from fact.libraries.body import calculate_bmr
@@ -103,7 +103,7 @@ def api_member_history_burnt(request):
         date_end = datetime.combine(today, time())
 
         calorie_burnt_week = CalorieBurnt.objects.filter(user=user, created_at__gte=date_start_week, created_at__lte=date_end)
-        calorie_burnt_month = CalorieBurnt.objects.filter(user=user, created_at__gte=date_start_month, created_at__lte=date_end)
+        calorie_burnt_month = CalorieBurnt.objects.filter(user=user, created_at__gte=date_start_month, created_at__lte=date_end).values('activity_label__name').annotate(duration = Sum('duration')).order_by('-duration')
 
         dist_week_calorie = {}
         dist_month_calorie = {}
@@ -116,6 +116,8 @@ def api_member_history_burnt(request):
         activity_level = list(ActivityLevel.objects.filter(user=user).order_by("-created_at"))[0]
         total_calorie_burnt = activity_level.tdee
 
+        dist_activity_level = {}
+
         for i in range(30):
             date_start = datetime.combine(today + timedelta((i + 0) * -1), time())
             date_end = datetime.combine(today + timedelta((i - 1) * -1), time())
@@ -126,6 +128,11 @@ def api_member_history_burnt(request):
                 week_calorie_result.append(0)
                 for calorie in calorie_burnt:
                     week_calorie_result[i] += calorie.activity_label.met * user.weight * calorie.duration / 3600
+
+                    date = calorie.created_at.strftime('%Y-%m-%d')
+                    if date not in dist_activity_level:
+                        dist_activity_level[date] = 0
+                    dist_activity_level[date] += calorie.duration
 
             month_calorie = 0
             for calorie in calorie_burnt:
@@ -138,13 +145,20 @@ def api_member_history_burnt(request):
             else:
                 month_calorie_result["ideal"] += 1
 
+        list_activity_level = []
+        for key, val in dist_activity_level.items();
+            list_activity_level.append((val, key))
+
+        list_activity_level.sort(reversed=True)
+
         week_calorie_result = list(reversed(week_calorie_result))
         return JsonResponse({"results": {
             "week": week_calorie_result,
             "month": month_calorie_result,
             # "most_active":
             # "least_active":
-            # "activity":
+            "most_active": list(calorie_burnt_month)[0],
+            "activity_level": list_activity_level,
             "level": activity_level.level
         }})
 

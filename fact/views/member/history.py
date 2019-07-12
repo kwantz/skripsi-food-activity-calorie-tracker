@@ -146,7 +146,7 @@ def api_member_history_burnt(request):
                 month_calorie_result["ideal"] += 1
 
         list_activity_level = []
-        for key, val in dist_activity_level.items();
+        for key, val in dist_activity_level.items():
             list_activity_level.append((val, key))
 
         list_activity_level.sort(reversed=True)

@@ -46,7 +46,7 @@ def api_member_activity_level_review(request):
         date_start = datetime.combine(last30, time())
         date_end = datetime.combine(today, time())
 
-        calorie_burnt = CalorieBurnt.objects.filter(user=user.id, created_at__gte=date_start, created_at__lte=date_end)
+        calorie_burnt = CalorieBurnt.objects.filter(user=user.id, created_at__gte=date_start, created_at__lte=date_end, deleted_at__isnull=True)
 
         energy = 0
         for calorie in calorie_burnt:

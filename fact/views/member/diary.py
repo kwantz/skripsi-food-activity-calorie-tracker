@@ -25,7 +25,7 @@ def api_member_diary(request):
         date_end = datetime.combine(tomorrow, time())
 
         calorie_intake = CalorieIntake.objects.filter(user=user.id, created_at__gte=date_start, created_at__lte=date_end)
-        calorie_burnt = CalorieBurnt.objects.filter(user=user.id, created_at__gte=date_start, created_at__lte=date_end)
+        calorie_burnt = CalorieBurnt.objects.filter(user=user.id, created_at__gte=date_start, created_at__lte=date_end, deleted_at__isnull=True)
 
         dict_activity = {}
         burnt = []

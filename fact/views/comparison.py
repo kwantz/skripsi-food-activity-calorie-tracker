@@ -105,7 +105,7 @@ def choose_clasification(train_label, train_feature, algorithm="rkelm"):
         clasification = RandomForestClassifier().fit(features, labels)
 
     elif algorithm == "svm":
-        clasification = SVC(gamma=1 / (2 ** 10), kernel='sigmoid').fit(features, labels)
+        clasification = SVC(gamma=1 / (2 ** 10), kernel='rbf').fit(features, labels)
 
     elif algorithm == "knn":
         clasification = KNeighborsClassifier().fit(features, labels)

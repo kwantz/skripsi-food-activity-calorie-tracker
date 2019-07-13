@@ -5,7 +5,7 @@ from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 from fact.libraries.jwt import JWT
-from fact.libraries.dataset import get_train_features, get_train_labels, get_test_labels, get_test_features
+from fact.libraries.dataset import get_train_features, get_train_labels, get_x_test, get_x_train, get_y_test, get_y_train
 from fact.libraries.features import Features
 from fact.libraries.machinelearning import ELM, KELM, RKELM
 from django.http import JsonResponse
@@ -50,13 +50,13 @@ def api_comparison(request):
         end_training_time = time.time()
 
         start_testing_time = time.time()
-        predict = list(clasification.predict(get_test_features()))
+        predict = list(clasification.predict(get_x_test()))
         end_testing_time = time.time()
 
         correct = 0
         incorrect = 0
         # predict.sort()
-        test_label = list(get_test_labels())
+        test_label = list(get_y_test())
         for i in range(len(predict)):
             if int(test_label[i]) == int(predict[i]):
                 correct += 1
@@ -88,8 +88,8 @@ def convert_raw_data_to_data_test(raw_data):
 
 
 def choose_clasification(train_label, train_feature, algorithm="rkelm"):
-    labels = train_feature[:, 0]
-    features = train_feature[:, 1:]
+    labels = get_y_train()
+    features = get_x_train()
     clasification = None
 
     if algorithm == "elm":
@@ -105,7 +105,7 @@ def choose_clasification(train_label, train_feature, algorithm="rkelm"):
         clasification = RandomForestClassifier().fit(features, labels)
 
     elif algorithm == "svm":
-        clasification = SVC(gamma=1 / (2 ** 15)).fit(features, labels)
+        clasification = SVC(gamma=1 / (2 ** 10), kernel='sigmoid').fit(features, labels)
 
     elif algorithm == "knn":
         clasification = KNeighborsClassifier().fit(features, labels)

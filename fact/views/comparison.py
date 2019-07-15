@@ -98,10 +98,10 @@ def choose_clasification(train_label, X, y, algorithm="rkelm"):
         clasification = RKELM(train_label.shape[0]).fit(X, y)
 
     elif algorithm == "rf":
-        clasification = RandomForestClassifier(n_estimators=10).fit(X, y)
+        clasification = RandomForestClassifier(n_estimators=1).fit(X, y)
 
     elif algorithm == "svm":
-        clasification = SVC(gamma=1 / (2 ** 10), kernel='rbf').fit(X, y)
+        clasification = SVC(kernel='rbf').fit(X, y)
 
     elif algorithm == "knn":
         clasification = KNeighborsClassifier().fit(X, y)

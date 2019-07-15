@@ -98,7 +98,7 @@ def choose_clasification(train_label, X, y, algorithm="rkelm"):
         clasification = RKELM(train_label.shape[0]).fit(X, y)
 
     elif algorithm == "rf":
-        clasification = RandomForestClassifier(n_estimators=1).fit(X, y)
+        clasification = RandomForestClassifier(max_depth=5).fit(X, y)
 
     elif algorithm == "svm":
         clasification = SVC(kernel='rbf').fit(X, y)

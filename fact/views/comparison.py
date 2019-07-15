@@ -73,7 +73,9 @@ def api_comparison(request):
                 "classification": {
                     "correct": correct,
                     "incorrect": incorrect
-                }
+                },
+                "dummy_1": test_label,
+                "dummy_2": predict
             })
 
         return JsonResponse({

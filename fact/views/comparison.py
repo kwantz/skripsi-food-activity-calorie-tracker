@@ -1,5 +1,6 @@
 import time, json, csv
 import numpy as np
+from sklearn.model_selection import KFold
 import pandas as pd
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
@@ -35,79 +36,72 @@ def api_comparison(request):
 
     if request.method == "POST":
         json_request = json.loads(request.body)
-
-        label = json_request["label"]
         algorithm = json_request["algorithm"].lower()
-        raw_data = list(np.loadtxt('csv/data_test.csv', delimiter=","))
 
         train_label = get_train_labels()
         train_feature = get_train_features(user.id)
 
-        data_test = convert_raw_data_to_data_test(raw_data)
+        X = train_feature[:, 1:]
+        y = train_feature[:, 0]
+        kf = KFold(n_splits=10)
+        results = []
 
-        start_training_time = time.time()
-        clasification = choose_clasification(train_label, train_feature, algorithm)
-        end_training_time = time.time()
+        for train_index, test_index in kf.split(train_feature):
+            X_train, X_test = X[train_index], X[test_index]
+            y_train, y_test = y[train_index], y[test_index]
 
-        start_testing_time = time.time()
-        predict = list(clasification.predict(get_x_test()))
-        end_testing_time = time.time()
+            start_training_time = time.time()
+            clasification = choose_clasification(train_label, X_train, y_train, algorithm)
+            end_training_time = time.time()
 
-        correct = 0
-        incorrect = 0
-        # predict.sort()
-        test_label = list(get_y_test())
-        for i in range(len(predict)):
-            if int(test_label[i]) == int(predict[i]):
-                correct += 1
-            else:
-                incorrect += 1
+            start_testing_time = time.time()
+            predict = list(clasification.predict(X_test))
+            end_testing_time = time.time()
 
-        return JsonResponse({
-            "results": {
+            correct = 0
+            incorrect = 0
+            test_label = list(y_test)
+            for i in range(len(predict)):
+                if int(test_label[i]) == int(predict[i]):
+                    correct += 1
+                else:
+                    incorrect += 1
+
+            results.append({
                 "training_time": end_training_time - start_training_time,
                 "testing_time": end_testing_time - start_testing_time,
                 "classification": {
                     "correct": correct,
                     "incorrect": incorrect
                 }
-            }
+            })
+
+        return JsonResponse({
+            "results": results
         })
 
     return JsonResponse({"message": "Invalid Method"})
 
 
-def convert_raw_data_to_data_test(raw_data):
-    features = Features()
-
-    for i in range(len(raw_data)):
-        raw_data[i] = features.convert(raw_data[i])
-
-    raw_data = pd.DataFrame(raw_data)
-    return np.array(list(features.extract(raw_data)))
-
-
-def choose_clasification(train_label, train_feature, algorithm="rkelm"):
-    labels = get_y_train()
-    features = get_x_train()
+def choose_clasification(train_label, X, y, algorithm="rkelm"):
     clasification = None
 
     if algorithm == "elm":
-        clasification = ELM(train_label.shape[0]).fit(features, labels)
+        clasification = ELM(train_label.shape[0]).fit(X, y)
 
     elif algorithm == "kelm":
-        clasification = KELM(train_label.shape[0]).fit(features, labels)
+        clasification = KELM(train_label.shape[0]).fit(X, y)
 
     elif algorithm == "rkelm":
-        clasification = RKELM(train_label.shape[0]).fit(features, labels)
+        clasification = RKELM(train_label.shape[0]).fit(X, y)
 
     elif algorithm == "rf":
-        clasification = RandomForestClassifier().fit(features, labels)
+        clasification = RandomForestClassifier().fit(X, y)
 
     elif algorithm == "svm":
-        clasification = SVC(gamma=1 / (2 ** 10), kernel='rbf').fit(features, labels)
+        clasification = SVC(gamma=1 / (2 ** 10), kernel='rbf').fit(X, y)
 
     elif algorithm == "knn":
-        clasification = KNeighborsClassifier().fit(features, labels)
+        clasification = KNeighborsClassifier().fit(X, y)
 
     return clasification

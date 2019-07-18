@@ -26,25 +26,10 @@ def api_member_user_detail(request):
         date_start = datetime.combine(today, time())
         date_end = datetime.combine(tomorrow, time())
 
-        fat = 0
-        protein = 0
-        carbohydrate = 0
-        calorie_intake = CalorieIntake.objects.filter(user=user.id, created_at__gte=date_start, created_at__lte=date_end)
-
-        for calorie in list(calorie_intake):
-            if calorie.meal is not None:
-                details = MealDetail.objects.filter(meal=calorie.meal)
-                for detail in details:
-                    fat += (detail.food.fat * detail.qty * calorie.qty)
-                    protein += (detail.food.protein * detail.qty * calorie.qty)
-                    carbohydrate += (detail.food.carbohydrate * detail.qty * calorie.qty)
-
-            elif calorie.food is not None:
-                fat += calorie.food.fat * calorie.qty
-                protein += calorie.food.protein * calorie.qty
-                carbohydrate += calorie.food.carbohydrate * calorie.qty
-
         activity_level = list(ActivityLevel.objects.filter(user=user).order_by("-created_at"))[0]
+        fat = 0.25 * activity_level.tdee / 9
+        protein = 0.15 * activity_level.tdee / 4
+        carbohydrate = 0.6 * activity_level.tdee / 4
 
         return JsonResponse({"results": {
             "name": user.name,

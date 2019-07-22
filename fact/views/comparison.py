@@ -1,4 +1,4 @@
-import time, json, csv
+import time, json, csv, random
 import numpy as np
 from sklearn.model_selection import KFold
 import pandas as pd
@@ -40,6 +40,9 @@ def api_comparison(request):
 
         train_label = get_train_labels()
         train_feature = get_train_features(user.id)
+
+        random.seed(10)
+        random.shuffle(train_feature)
 
         X = train_feature[:, 1:]
         y = train_feature[:, 0]

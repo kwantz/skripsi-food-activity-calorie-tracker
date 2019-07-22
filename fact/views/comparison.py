@@ -41,7 +41,7 @@ def api_comparison(request):
         train_label = get_train_labels()
         train_feature = get_train_features(user.id)
 
-        random.seed(10)
+        random.seed(150)
         random.shuffle(train_feature)
 
         X = train_feature[:, 1:]

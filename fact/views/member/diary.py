@@ -69,15 +69,15 @@ def api_member_diary(request):
                 details = MealDetail.objects.filter(meal=calorie.meal)
                 for detail in details:
                     total_calorie += (detail.food.calorie * detail.qty)
-                    nutrient["fat"] += (detail.food.fat * detail.qty)
-                    nutrient["protein"] += (detail.food.protein * detail.qty)
-                    nutrient["carbohydrate"] += (detail.food.carbohydrate * detail.qty)
+                    nutrient["fat"] += (detail.food.fat * detail.qty * calorie.qty)
+                    nutrient["protein"] += (detail.food.protein * detail.qty * calorie.qty)
+                    nutrient["carbohydrate"] += (detail.food.carbohydrate * detail.qty * calorie.qty)
 
             elif calorie.food is not None:
                 total_calorie = calorie.food.calorie
-                nutrient["fat"] += calorie.food.fat
-                nutrient["protein"] += calorie.food.protein
-                nutrient["carbohydrate"] += calorie.food.carbohydrate
+                nutrient["fat"] += calorie.food.fat * calorie.qty
+                nutrient["protein"] += calorie.food.protein * calorie.qty
+                nutrient["carbohydrate"] += calorie.food.carbohydrate * calorie.qty
 
             data = {
                 "id": calorie.id,
@@ -95,7 +95,7 @@ def api_member_diary(request):
             elif calorie.eat_time.id == 4:
                 intake["snack"].append(data)
 
-            total_calorie_intake += total_calorie
+            total_calorie_intake += (total_calorie * calorie.qty)
 
         activity_level = list(ActivityLevel.objects.filter(user=user).order_by("-created_at"))[0]
         eat_time = list(EatTime.objects.all())

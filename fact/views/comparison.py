@@ -46,8 +46,7 @@ def api_comparison(request):
         train_label = get_train_labels()
         train_feature = get_train_features(user.id)
 
-        # np.random.seed(3)
-        np.random.seed(5)
+        np.random.seed(3)
         np.random.shuffle(train_feature)
 
         X = train_feature[:, 1:]
@@ -68,7 +67,6 @@ def api_comparison(request):
         for train_index, test_index in kf.split(train_feature):
             X_train, X_test = X[train_index], X[test_index]
             y_train, y_test = y[train_index], y[test_index]
-
 
             start_training_time = time.time()
             clasification = choose_clasification(train_label, X_train, y_train, algorithm)

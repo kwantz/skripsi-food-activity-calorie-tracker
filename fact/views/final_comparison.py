@@ -78,9 +78,9 @@ for x in range(10):
                     incorrect += 1
 
             print("Accuracy : ", correct * 100 / (correct + incorrect), "%")
-            print("Precision: ", precision_score(list(test_label), list(predict)) * 100, "%")
-            print("Recall   : ", recall_score(list(test_label), list(predict)) * 100, "%")
-            print("Fscore   : ", f1_score(list(test_label), list(predict)) * 100, "%")
+            print("Precision: ", precision_score(list(test_label), list(predict), average='macro') * 100, "%")
+            print("Recall   : ", recall_score(list(test_label), list(predict), average='macro') * 100, "%")
+            print("Fscore   : ", f1_score(list(test_label), list(predict), average='macro') * 100, "%")
             print("Training : ", end_training_time - start_training_time, "s")
             print("Testing  : ", end_testing_time - start_testing_time, "s")
             print("==========")

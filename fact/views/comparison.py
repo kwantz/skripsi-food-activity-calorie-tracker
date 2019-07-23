@@ -70,8 +70,8 @@ def api_comparison(request):
             X_train, X_test = X[train_index], X[test_index]
             y_train, y_test = y[train_index], y[test_index]
 
-            pengujian["fold_x"].append(list(X_test))
-            pengujian["fold_y"].append(list(y_test))
+            pengujian["fold_x"].append(X_test.tolist())
+            pengujian["fold_y"].append(y_test.tolist())
 
             start_training_time = time.time()
             clasification = choose_clasification(train_label, X_train, y_train, algorithm)
@@ -96,9 +96,9 @@ def api_comparison(request):
             pengujian["total_fscore"].append(f1_score(list(test_label), list(predict), average='macro'))
 
             precision, recall, fscore, support = score(list(test_label), list(predict))
-            pengujian["precision"].append(precision)
-            pengujian["recall"].append(recall)
-            pengujian["fscore"].append(fscore)
+            pengujian["precision"].append(precision.tolist())
+            pengujian["recall"].append(recall.tolist())
+            pengujian["fscore"].append(fscore.tolist())
 
             results.append({
                 "training_time": end_training_time - start_training_time,

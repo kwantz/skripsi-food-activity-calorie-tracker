@@ -47,7 +47,7 @@ def api_comparison(request):
         train_feature = get_train_features(user.id)
 
         # np.random.seed(3)
-        np.random.seed(2)
+        np.random.seed(4)
         np.random.shuffle(train_feature)
 
         X = train_feature[:, 1:]

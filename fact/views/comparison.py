@@ -12,6 +12,11 @@ from fact.libraries.machinelearning import ELM, KELM, RKELM
 from django.http import JsonResponse
 from django.core.files.storage import FileSystemStorage
 from django.views.decorators.csrf import csrf_exempt
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import recall_score
+from sklearn.metrics import precision_score
+from sklearn.metrics import f1_score
+from sklearn.metrics import precision_recall_fscore_support as score
 
 
 @csrf_exempt
@@ -49,9 +54,24 @@ def api_comparison(request):
         kf = KFold(n_splits=10)
         results = []
 
+        pengujian = {
+            "fold_x": [],
+            "fold_y": [],
+            "confusion_matrix": [],
+            "precision": [],
+            "recall": [],
+            "fscore": [],
+            "total_precision": 0,
+            "total_recall": 0,
+            "total_fscore": 0,
+        }
+
         for train_index, test_index in kf.split(train_feature):
             X_train, X_test = X[train_index], X[test_index]
             y_train, y_test = y[train_index], y[test_index]
+
+            pengujian["fold_x"].append(list(X_test))
+            pengujian["fold_y"].append(list(y_test))
 
             start_training_time = time.time()
             clasification = choose_clasification(train_label, X_train, y_train, algorithm)
@@ -70,6 +90,16 @@ def api_comparison(request):
                 else:
                     incorrect += 1
 
+            pengujian["confusion_matrix"] = confusion_matrix(list(test_label), list(predict), labels=[0, 1, 2, 3, 4])
+            pengujian["total_precision"] = precision_score(list(test_label), list(predict), average='macro')
+            pengujian["total_recall"] = recall_score(list(test_label), list(predict), average='macro')
+            pengujian["total_fscore"] = f1_score(list(test_label), list(predict), average='macro')
+
+            precision, recall, fscore, support = score(list(test_label), list(predict))
+            pengujian["precision"] = precision
+            pengujian["recall"] = recall
+            pengujian["fscore"] = fscore
+
             results.append({
                 "training_time": end_training_time - start_training_time,
                 "testing_time": end_testing_time - start_testing_time,
@@ -78,7 +108,8 @@ def api_comparison(request):
                     "incorrect": incorrect
                 },
                 "dummy_1": test_label,
-                "dummy_2": predict
+                "dummy_2": predict,
+                "pengujian": pengujian
             })
 
         return JsonResponse({

@@ -55,22 +55,17 @@ def api_comparison(request):
         results = []
 
         pengujian = {
-            "fold_x": [],
             "fold_y": [],
             "confusion_matrix": [],
             "precision": [],
             "recall": [],
             "fscore": [],
-            "total_precision": [],
-            "total_recall": [],
-            "total_fscore": [],
         }
 
         for train_index, test_index in kf.split(train_feature):
             X_train, X_test = X[train_index], X[test_index]
             y_train, y_test = y[train_index], y[test_index]
 
-            pengujian["fold_x"].append(X_test.tolist())
             pengujian["fold_y"].append(y_test.tolist())
 
             start_training_time = time.time()
@@ -91,10 +86,6 @@ def api_comparison(request):
                     incorrect += 1
 
             pengujian["confusion_matrix"].append((confusion_matrix(list(test_label), list(predict), labels=[0, 1, 2, 3, 4])).tolist())
-            pengujian["total_precision"].append(precision_score(list(test_label), list(predict), average='macro'))
-            pengujian["total_recall"].append(recall_score(list(test_label), list(predict), average='macro'))
-            pengujian["total_fscore"].append(f1_score(list(test_label), list(predict), average='macro'))
-
             precision, recall, fscore, support = score(list(test_label), list(predict))
             pengujian["precision"].append(precision.tolist())
             pengujian["recall"].append(recall.tolist())

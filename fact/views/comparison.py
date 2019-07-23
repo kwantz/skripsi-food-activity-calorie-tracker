@@ -86,7 +86,7 @@ def api_comparison(request):
                     incorrect += 1
 
             pengujian["fold_y"].append(test_label)
-            pengujian["fold_y"].append(predict)
+            pengujian["fold_y_pred"].append(predict)
             pengujian["confusion_matrix"].append((confusion_matrix(list(test_label), list(predict), labels=[0, 1, 2, 3, 4])).tolist())
             precision, recall, fscore, support = score(list(test_label), list(predict))
             pengujian["precision"].append(precision.tolist())

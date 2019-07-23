@@ -56,6 +56,7 @@ def api_comparison(request):
 
         pengujian = {
             "fold_y": [],
+            "fold_y_pred": [],
             "confusion_matrix": [],
             "precision": [],
             "recall": [],
@@ -66,7 +67,6 @@ def api_comparison(request):
             X_train, X_test = X[train_index], X[test_index]
             y_train, y_test = y[train_index], y[test_index]
 
-            pengujian["fold_y"].append(y_test.tolist())
 
             start_training_time = time.time()
             clasification = choose_clasification(train_label, X_train, y_train, algorithm)
@@ -85,6 +85,8 @@ def api_comparison(request):
                 else:
                     incorrect += 1
 
+            pengujian["fold_y"].append(test_label)
+            pengujian["fold_y"].append(predict)
             pengujian["confusion_matrix"].append((confusion_matrix(list(test_label), list(predict), labels=[0, 1, 2, 3, 4])).tolist())
             precision, recall, fscore, support = score(list(test_label), list(predict))
             pengujian["precision"].append(precision.tolist())

@@ -61,9 +61,9 @@ def api_comparison(request):
             "precision": [],
             "recall": [],
             "fscore": [],
-            "total_precision": 0,
-            "total_recall": 0,
-            "total_fscore": 0,
+            "total_precision": [],
+            "total_recall": [],
+            "total_fscore": [],
         }
 
         for train_index, test_index in kf.split(train_feature):
@@ -90,15 +90,15 @@ def api_comparison(request):
                 else:
                     incorrect += 1
 
-            pengujian["confusion_matrix"] = confusion_matrix(list(test_label), list(predict), labels=[0, 1, 2, 3, 4])
-            pengujian["total_precision"] = precision_score(list(test_label), list(predict), average='macro')
-            pengujian["total_recall"] = recall_score(list(test_label), list(predict), average='macro')
-            pengujian["total_fscore"] = f1_score(list(test_label), list(predict), average='macro')
+            pengujian["confusion_matrix"].append(confusion_matrix(list(test_label), list(predict), labels=[0, 1, 2, 3, 4]))
+            pengujian["total_precision"].append(precision_score(list(test_label), list(predict), average='macro'))
+            pengujian["total_recall"].append(recall_score(list(test_label), list(predict), average='macro'))
+            pengujian["total_fscore"].append(f1_score(list(test_label), list(predict), average='macro'))
 
             precision, recall, fscore, support = score(list(test_label), list(predict))
-            pengujian["precision"] = precision
-            pengujian["recall"] = recall
-            pengujian["fscore"] = fscore
+            pengujian["precision"].append(precision)
+            pengujian["recall"].append(recall)
+            pengujian["fscore"].append(fscore)
 
             results.append({
                 "training_time": end_training_time - start_training_time,
@@ -108,12 +108,12 @@ def api_comparison(request):
                     "incorrect": incorrect
                 },
                 "dummy_1": test_label,
-                "dummy_2": predict,
-                "pengujian": pengujian
+                "dummy_2": predict
             })
 
         return JsonResponse({
-            "results": results
+            "results": results,
+            "pengujian": pengujian
         })
 
     return JsonResponse({"message": "Invalid Method"})

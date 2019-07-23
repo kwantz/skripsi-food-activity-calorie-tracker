@@ -55,32 +55,46 @@ for x in range(10):
     y = train_feature[:, 0]
     kf = KFold(n_splits=10)
 
+    results = {
+        "accuracy": 0,
+        "precision": 0,
+        "recall": 0,
+        "Fscore": 0,
+        "training": 0,
+        "testing": 0
+    }
+
     for train_index, test_index in kf.split(train_feature):
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
-        for algo in ["elm", "kelm", "rkelm", "rf", "svm", "knn"]:
-            start_training_time = time.time()
-            clasification = choose_clasification(train_label, X_train, y_train, algo)
-            end_training_time = time.time()
+        start_training_time = time.time()
+        clasification = choose_clasification(train_label, X_train, y_train, "elm")
+        end_training_time = time.time()
 
-            start_testing_time = time.time()
-            predict = list(clasification.predict(X_test))
-            end_testing_time = time.time()
+        start_testing_time = time.time()
+        predict = list(clasification.predict(X_test))
+        end_testing_time = time.time()
 
-            correct = 0
-            incorrect = 0
-            test_label = list(y_test)
-            for i in range(len(predict)):
-                if int(test_label[i]) == int(predict[i]):
-                    correct += 1
-                else:
-                    incorrect += 1
+        correct = 0
+        incorrect = 0
+        test_label = list(y_test)
+        for i in range(len(predict)):
+            if int(test_label[i]) == int(predict[i]):
+                correct += 1
+            else:
+                incorrect += 1
 
-            print("Accuracy : ", correct * 100 / (correct + incorrect), "%")
-            print("Precision: ", precision_score(list(test_label), list(predict), average='macro') * 100, "%")
-            print("Recall   : ", recall_score(list(test_label), list(predict), average='macro') * 100, "%")
-            print("Fscore   : ", f1_score(list(test_label), list(predict), average='macro') * 100, "%")
-            print("Training : ", end_training_time - start_training_time, "s")
-            print("Testing  : ", end_testing_time - start_testing_time, "s")
-            print("==========")
+        results["accuracy"] += correct * 100 / (correct + incorrect)
+        results["precision"] += precision_score(list(test_label), list(predict), average='macro') * 100
+        results["recall"] += recall_score(list(test_label), list(predict), average='macro') * 100
+        results["Fscore"] += f1_score(list(test_label), list(predict), average='macro') * 100
+        results["training"] += (end_training_time - start_training_time)
+        results["testing"] += (end_testing_time - start_testing_time)
+
+    print("Accuracy :", (results["accuracy"] / 10), "%")
+    print("Precision:", (results["precision"] / 10), "%")
+    print("Recall   :", (results["recall"] / 10), "%")
+    print("Fscore   :", (results["Fscore"] / 10), "%")
+    print("Training :", (results["training"] / 10), "s")
+    print("Testing  :", (results["testing"] / 10), "s")

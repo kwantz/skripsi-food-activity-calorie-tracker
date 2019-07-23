@@ -69,7 +69,7 @@ for x in range(10):
         y_train, y_test = y[train_index], y[test_index]
 
         start_training_time = time.time()
-        clasification = choose_clasification(train_label, X_train, y_train, "elm")
+        clasification = choose_clasification(train_label, X_train, y_train, algo)
         end_training_time = time.time()
 
         start_testing_time = time.time()
@@ -98,3 +98,4 @@ for x in range(10):
     print("Fscore   :", (results["Fscore"] / 10), "%")
     print("Training :", (results["training"] / 10), "s")
     print("Testing  :", (results["testing"] / 10), "s")
+    print("==========")

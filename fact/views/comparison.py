@@ -90,7 +90,7 @@ def api_comparison(request):
                 else:
                     incorrect += 1
 
-            pengujian["confusion_matrix"].append(confusion_matrix(list(test_label), list(predict), labels=[0, 1, 2, 3, 4]))
+            pengujian["confusion_matrix"].append((confusion_matrix(list(test_label), list(predict), labels=[0, 1, 2, 3, 4])).tolist())
             pengujian["total_precision"].append(precision_score(list(test_label), list(predict), average='macro'))
             pengujian["total_recall"].append(recall_score(list(test_label), list(predict), average='macro'))
             pengujian["total_fscore"].append(f1_score(list(test_label), list(predict), average='macro'))

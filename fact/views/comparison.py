@@ -86,7 +86,7 @@ def api_comparison(request):
                 else:
                     incorrect += 1
 
-            pengujian["dataset"].append(list(train_feature[test_index]))
+            pengujian["dataset"].append(train_feature[test_index].tolist())
             pengujian["fold_y"].append(test_label)
             pengujian["fold_y_pred"].append(predict)
             pengujian["confusion_matrix"].append((confusion_matrix(list(test_label), list(predict), labels=[0, 1, 2, 3, 4])).tolist())

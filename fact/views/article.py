@@ -42,7 +42,7 @@ def api_article(request):
         have_data = Article.objects.annotate(lower_title=Lower("title")).filter(lower_title__exact = json_request["title"].lower()).values('id', 'title')
 
         if len(have_data) > 0:
-            return JsonResponse({"message": json_request["title"] + " is already available in database."}, status=400)
+            return JsonResponse({"message": json_request["title"] + " is already available."}, status=400)
 
         Article.objects.create(
             user=user,
@@ -73,7 +73,7 @@ def api_article_detail(request, article_id):
         have_data = Article.objects.annotate(lower_title=Lower("title")).filter(~Q(id=article_id), lower_title__exact = json_request["title"].lower()).values('id', 'title')
 
         if len(have_data) > 0:
-            return JsonResponse({"message": json_request["title"] + " is already available in database."}, status=400)
+            return JsonResponse({"message": json_request["title"] + " is already available."}, status=400)
 
         article = Article.objects.get(id=article_id)
         article.title = json_request["title"]

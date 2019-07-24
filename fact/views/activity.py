@@ -36,7 +36,7 @@ def api_activity(request):
         have_data = ActivityLabel.objects.annotate(lower_name=Lower("name")).filter(lower_name__exact = json_request["name"].lower()).values('id', 'name')
 
         if len(have_data) > 0:
-            return JsonResponse({"message": json_request["name"] + " is already available in database."}, status=400)
+            return JsonResponse({"message": json_request["name"] + " is already available."}, status=400)
 
         ActivityLabel.objects.create(
             met=json_request["met"],
@@ -55,7 +55,7 @@ def api_activity_detail(request, activity_id):
         have_data = ActivityLabel.objects.annotate(lower_name=Lower("name")).filter(~Q(id=activity_id), lower_name__exact = json_request["name"].lower()).values('id', 'name')
 
         if len(have_data) > 0:
-            return JsonResponse({"message": json_request["name"] + " is already available in database."}, status=400)
+            return JsonResponse({"message": json_request["name"] + " is already available."}, status=400)
 
         activity = ActivityLabel.objects.get(id=activity_id)
         activity.met = json_request["met"]

@@ -20,6 +20,9 @@ from sklearn.metrics import precision_recall_fscore_support as score
 
 np.set_printoptions(threshold=np.inf)
 
+if algo is None:
+    algo = 'elm'
+
 def choose_clasification(train_label, X, y, algorithm="rkelm"):
     clasification = None
 

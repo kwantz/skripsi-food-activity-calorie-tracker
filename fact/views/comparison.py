@@ -40,9 +40,6 @@ def api_comparison(request):
         return JsonResponse({"message": "Unauthorized"})
 
     if request.method == "POST":
-        json_request = json.loads(request.body)
-        algorithm = json_request["algorithm"].lower()
-
         train_label = get_train_labels()
         train_feature = get_train_features(user.id)
 
@@ -54,60 +51,59 @@ def api_comparison(request):
         kf = KFold(n_splits=10)
         results = []
 
-        pengujian = {
-            "dataset": [],
-            "fold_y": [],
-            "fold_y_pred": [],
-            "confusion_matrix": [],
+        results = {
+            "accuracy": [],
             "precision": [],
             "recall": [],
             "fscore": [],
+            "training": [],
+            "testing": [],
         }
 
         for train_index, test_index in kf.split(train_feature):
             X_train, X_test = X[train_index], X[test_index]
             y_train, y_test = y[train_index], y[test_index]
 
-            start_training_time = time.time()
-            clasification = choose_clasification(train_label, X_train, y_train, algorithm)
-            end_training_time = time.time()
+            temp_accuracy = {"elm": 0,"kelm": 0,"rkelm": 0,"rf": 0,"svm": 0,"knn": 0}
+            temp_precision = {"elm": 0,"kelm": 0,"rkelm": 0,"rf": 0,"svm": 0,"knn": 0}
+            temp_recall = {"elm": 0,"kelm": 0,"rkelm": 0,"rf": 0,"svm": 0,"knn": 0}
+            temp_fscore = {"elm": 0,"kelm": 0,"rkelm": 0,"rf": 0,"svm": 0,"knn": 0}
+            temp_training = {"elm": 0,"kelm": 0,"rkelm": 0,"rf": 0,"svm": 0,"knn": 0}
+            temp_testing = {"elm": 0,"kelm": 0,"rkelm": 0,"rf": 0,"svm": 0,"knn": 0}
 
-            start_testing_time = time.time()
-            predict = list(clasification.predict(X_test))
-            end_testing_time = time.time()
+            for algorithm in ["elm", "kelm", "rkelm", "rf", "svm", "knn"]:
+                start_training_time = time.time()
+                clasification = choose_clasification(train_label, X_train, y_train, algorithm)
+                end_training_time = time.time()
 
-            correct = 0
-            incorrect = 0
-            test_label = list(y_test)
-            for i in range(len(predict)):
-                if int(test_label[i]) == int(predict[i]):
-                    correct += 1
-                else:
-                    incorrect += 1
+                start_testing_time = time.time()
+                predict = list(clasification.predict(X_test))
+                end_testing_time = time.time()
 
-            pengujian["dataset"].append(train_feature[test_index].tolist())
-            pengujian["fold_y"].append(test_label)
-            pengujian["fold_y_pred"].append(predict)
-            pengujian["confusion_matrix"].append((confusion_matrix(list(test_label), list(predict), labels=[0, 1, 2, 3, 4])).tolist())
-            precision, recall, fscore, support = score(list(test_label), list(predict))
-            pengujian["precision"].append(precision.tolist())
-            pengujian["recall"].append(recall.tolist())
-            pengujian["fscore"].append(fscore.tolist())
+                correct, incorrect = 0, 0
+                test_label = list(y_test)
+                for i in range(len(predict)):
+                    if int(test_label[i]) == int(predict[i]):
+                        correct += 1
+                    else:
+                        incorrect += 1
 
-            results.append({
-                "training_time": end_training_time - start_training_time,
-                "testing_time": end_testing_time - start_testing_time,
-                "classification": {
-                    "correct": correct,
-                    "incorrect": incorrect
-                },
-                "dummy_1": test_label,
-                "dummy_2": predict
-            })
+                temp_accuracy[algorithm] = correct * 100 / (correct + incorrect)
+                temp_precision[algorithm] = precision_score(list(test_label), list(predict), average='macro') * 100
+                temp_recall[algorithm] = recall_score(list(test_label), list(predict), average='macro') * 100
+                temp_fscore[algorithm] = f1_score(list(test_label), list(predict), average='macro') * 100
+                temp_training[algorithm] = end_training_time - start_training_time
+                temp_testing[algorithm] = end_testing_time - start_testing_time
+
+            results["accuracy"].append(temp_accuracy)
+            results["precision"].append(temp_precision)
+            results["recall"].append(temp_recall)
+            results["fscore"].append(temp_fscore)
+            results["training"].append(temp_training)
+            results["testing"].append(temp_testing)
 
         return JsonResponse({
             "results": results,
-            "pengujian": pengujian
         })
 
     return JsonResponse({"message": "Invalid Method"})

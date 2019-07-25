@@ -1,4 +1,4 @@
-from fact.models import CalorieIntake, Food, EatTime, MealDetail, ActivityLevel, CalorieBurnt, Activity
+from fact.models import CalorieIntake, Food, EatTime, MealDetail, ActivityLevel, CalorieBurnt, Activity, ActivityLabel
 from django.http import JsonResponse
 from django.db.models import F
 from fact.libraries.jwt import JWT

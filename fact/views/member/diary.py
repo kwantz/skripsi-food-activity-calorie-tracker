@@ -1,4 +1,4 @@
-from fact.models import CalorieIntake, Food, EatTime, MealDetail, ActivityLevel, CalorieBurnt
+from fact.models import CalorieIntake, Food, EatTime, MealDetail, ActivityLevel, CalorieBurnt, Activity, ActivityLabel
 from django.http import JsonResponse
 from django.db.models import F
 from fact.libraries.jwt import JWT
@@ -124,13 +124,20 @@ def api_member_diary(request):
         nutrient["total_protein"] = 0.15 * activity_level.tdee / 4
         nutrient["total_carbohydrate"] = 0.6 * activity_level.tdee / 4
 
+        activity_1 = Activity.objects.filter(user=user, label=ActivityLabel.objects.get(id=2)).values('id')
+        activity_2 = Activity.objects.filter(user=user, label=ActivityLabel.objects.get(id=3)).values('id')
+        activity_3 = Activity.objects.filter(user=user, label=ActivityLabel.objects.get(id=4)).values('id')
+
+
+
         return JsonResponse({
             "results": {
                 "calorie": calorie,
                 "intake": intake,
                 "burnt": burnt,
                 "nutrient": nutrient,
-                "recommendation_calorie": recommendation_calorie
+                "recommendation_calorie": recommendation_calorie,
+                "activity": [len(list(activity_1)), len(list(activity_2)), len(list(activity_3))]
             }
         })
 

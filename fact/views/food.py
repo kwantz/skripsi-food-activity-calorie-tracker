@@ -28,7 +28,7 @@ def api_food(request):
             try:
                 if category != 0:
                     FoodContain.objects.get(food=food, food_category=category)
-                
+
                 categories = []
                 contains = FoodContain.objects.filter(food=food)
                 for contain in contains:
@@ -47,7 +47,7 @@ def api_food(request):
 
         total = len(results)
         pages = ceil(total / 30)
-        
+
         return JsonResponse({"results": {
             "total": total,
             "pages": pages,
@@ -67,8 +67,8 @@ def api_food(request):
         have_data = Food.objects.annotate(lower_name=Lower("name")).filter(lower_name__exact = json_request["name"].lower()).values('id', 'name')
 
         if len(have_data) > 0:
-            return JsonResponse({"message": json_request["name"] + " is already available in database.", "debug": list(have_data)}, status=400)
-            
+            return JsonResponse({"message": json_request["name"] + " is already available.", "debug": list(have_data)}, status=400)
+
         food = Food.objects.create(
             user=user,
             fat=json_request["fat"],
@@ -117,7 +117,7 @@ def api_food_detail(request, food_id):
         have_data = Food.objects.annotate(lower_name=Lower("name")).filter(~Q(id=food_id), lower_name__exact = json_request["name"].lower()).values('id', 'name')
 
         if len(have_data) > 0:
-            return JsonResponse({"message": json_request["name"] + " is already available in database."}, status=400)
+            return JsonResponse({"message": json_request["name"] + " is already available."}, status=400)
 
         food = Food.objects.get(id=food_id)
         food.fat = json_request["fat"]

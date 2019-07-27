@@ -9,7 +9,7 @@ from .image import *
 from .quote import *
 from .user import *
 from .migrate import *
-from .final_comparison import *
+# from .final_comparison import *
 
 from .member.article import *
 from .member.newsfeed import *

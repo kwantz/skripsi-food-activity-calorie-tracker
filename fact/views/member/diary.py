@@ -138,7 +138,7 @@ def api_member_diary(request):
         met = []
         activities = ActivityLabel.objects.filter(id__in=[2,3,4])
         for activity in activities:
-            met.append(activity['met'])
+            met.append(activity.met)
 
         if recommendation_calorie["breakfast"] < total_breakfast:
             diff = total_breakfast - recommendation_calorie["breakfast"]

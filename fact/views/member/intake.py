@@ -45,7 +45,7 @@ def api_member_intake_food(request):
 
         CalorieIntake.objects.create(
             user=user,
-            qty=json_request["qty"],
+            qty=json_request.get("qty", 1),
             food=Food.objects.get(id=json_request["id"]),
             eat_time=EatTime.objects.get(id=json_request["category_intake"]),
             created_at=today
@@ -66,11 +66,18 @@ def api_member_intake_meal(request):
 
     if request.method == "POST":
         json_request = json.loads(request.body)
+
+        year = int(json_request["year"])
+        month = int(json_request["month"])
+        day = int(json_request["day"])
+        today = date(year, month, day)
+
         CalorieIntake.objects.create(
             user=user,
             qty=1,
             meal=Meal.objects.get(id=json_request["id"]),
             eat_time=EatTime.objects.get(id=json_request["category_intake"]),
+            created_at=today
         )
 
         return JsonResponse({"message": "Success"})

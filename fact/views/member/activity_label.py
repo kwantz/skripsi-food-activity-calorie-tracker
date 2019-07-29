@@ -10,7 +10,7 @@ from django.db.models import F, Count
 
 
 @csrf_exempt
-def api_activity(request):
+def api_member_activity_label(request):
     bearer, token = request.META.get('HTTP_AUTHORIZATION').split()
     user = JWT().decode(token)
 

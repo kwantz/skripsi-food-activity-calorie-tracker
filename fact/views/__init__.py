@@ -23,3 +23,4 @@ from .member.history import *
 from .member.activity import *
 from .member.burnt import *
 from .member.recent import *
+from .member.activity_label import *

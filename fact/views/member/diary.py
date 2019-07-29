@@ -63,6 +63,10 @@ def api_member_diary(request):
         }
 
         total_calorie_intake = 0
+        total_breakfast = 0
+        total_lunch = 0
+        total_dinner = 0
+        total_snack = 0
         for calorie in calorie_intake:
             total_calorie = 0
             if calorie.meal is not None:
@@ -88,12 +92,16 @@ def api_member_diary(request):
 
             if calorie.eat_time.id == 1:
                 intake["breakfast"].append(data)
+                total_breakfast += total_calorie
             elif calorie.eat_time.id == 2:
                 intake["lunch"].append(data)
+                total_lunch += total_calorie
             elif calorie.eat_time.id == 3:
                 intake["dinner"].append(data)
+                total_dinner += total_calorie
             elif calorie.eat_time.id == 4:
                 intake["snack"].append(data)
+                total_snack += total_calorie
 
             total_calorie_intake += (total_calorie * calorie.qty)
 
@@ -106,6 +114,55 @@ def api_member_diary(request):
             "dinner": activity_level.tdee * eat_time[2].percentage / 100,
             "snack": activity_level.tdee * eat_time[3].percentage / 100
         }
+
+        recommendation_activity = {
+            "breakfast": {
+                "running": 0,
+                "walking": 0,
+                "stair": 0
+            }, "lunch": {
+                "running": 0,
+                "walking": 0,
+                "stair": 0
+            }, "dinner": {
+                "running": 0,
+                "walking": 0,
+                "stair": 0
+            }, "snack": {
+                "running": 0,
+                "walking": 0,
+                "stair": 0
+            }
+        }
+
+        met = []
+        activities = ActivityLabel.objects.filter(id__in=[2,3,4])
+        for activity in activities:
+            met.append(activity['met'])
+
+        if recommendation_calorie["breakfast"] < total_breakfast:
+            diff = total_breakfast - recommendation_calorie["breakfast"]
+            recommendation_activity["breakfast"]["walking"] = int(diff * 3600) / (met[0] * user.weight)
+            recommendation_activity["breakfast"]["running"] = int(diff * 3600) / (met[1] * user.weight)
+            recommendation_activity["breakfast"]["stair"] = int(diff * 3600) / (met[2] * user.weight)
+
+        if recommendation_calorie["lunch"] < total_lunch:
+            diff = total_lunch - recommendation_calorie["lunch"]
+            recommendation_activity["lunch"]["walking"] = int(diff * 3600) / (met[0] * user.weight)
+            recommendation_activity["lunch"]["running"] = int(diff * 3600) / (met[1] * user.weight)
+            recommendation_activity["lunch"]["stair"] = int(diff * 3600) / (met[2] * user.weight)
+
+        if recommendation_calorie["dinner"] < total_dinner:
+            diff = total_dinner - recommendation_calorie["dinner"]
+            recommendation_activity["dinner"]["walking"] = int(diff * 3600) / (met[0] * user.weight)
+            recommendation_activity["dinner"]["running"] = int(diff * 3600) / (met[1] * user.weight)
+            recommendation_activity["dinner"]["stair"] = int(diff * 3600) / (met[2] * user.weight)
+
+        if recommendation_calorie["snack"] < total_snack:
+            diff = total_snack - recommendation_calorie["snack"]
+            recommendation_activity["snack"]["walking"] = int(diff * 3600) / (met[0] * user.weight)
+            recommendation_activity["snack"]["running"] = int(diff * 3600) / (met[1] * user.weight)
+            recommendation_activity["snack"]["stair"] = int(diff * 3600) / (met[2] * user.weight)
 
         bmi = calculate_bmi(user)
         calorie = {
@@ -128,8 +185,6 @@ def api_member_diary(request):
         activity_2 = Activity.objects.filter(user=user, label=ActivityLabel.objects.get(id=3)).values('id')
         activity_3 = Activity.objects.filter(user=user, label=ActivityLabel.objects.get(id=4)).values('id')
 
-
-
         return JsonResponse({
             "results": {
                 "calorie": calorie,
@@ -137,6 +192,7 @@ def api_member_diary(request):
                 "burnt": burnt,
                 "nutrient": nutrient,
                 "recommendation_calorie": recommendation_calorie,
+                "recommendation_activity": recommendation_activity,
                 "activity": [len(list(activity_1)), len(list(activity_2)), len(list(activity_3))]
             }
         })

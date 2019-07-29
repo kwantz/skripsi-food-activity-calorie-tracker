@@ -26,9 +26,9 @@ def api_member_activity_label(request):
             contain.append(activity['label'])
 
         if status == "new":
-            labels = ActivityLabel.objects.exclude(id__in=contain)
+            labels = ActivityLabel.objects.exclude(id__in=contain).values('id', 'met', 'name')
         else:
-            labels = ActivityLabel.objects.filter(id__in=contain)
+            labels = ActivityLabel.objects.filter(id__in=contain).values('id', 'met', 'name')
 
         return JsonResponse({"results": {
             "activities": list(labels)

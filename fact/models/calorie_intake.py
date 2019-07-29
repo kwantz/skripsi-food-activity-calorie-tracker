@@ -14,7 +14,7 @@ class CalorieIntake(models.Model):
     meal = models.ForeignKey(Meal, on_delete=models.CASCADE, null=True)
     eat_time = models.ForeignKey(EatTime, on_delete=models.CASCADE)
     qty = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True)
 

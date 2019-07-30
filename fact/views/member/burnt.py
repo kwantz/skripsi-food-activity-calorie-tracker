@@ -68,6 +68,15 @@ def api_member_burnt(request):
             "results": results
         })
 
+    if request.method == "DELETE":
+        json_request = json.loads(request.body)
+        for data in json_request["data"]:
+            burnt = CalorieBurnt.objects.get(id=data)
+            burnt.deleted_at = datetime.now()
+            burnt.save()
+
+        return JsonResponse({"message": "Success"})
+
     return JsonResponse({"message": "Invalid Method"})
 
 

@@ -7,6 +7,7 @@ from django.db.models.functions import Lower
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 from math import ceil
+from django.db.models import Count
 
 
 @csrf_exempt
@@ -28,44 +29,64 @@ def api_member_food(request):
             results = []
 
             if category == 0:
-                contains = FoodContain.objects.filter(Q(food__user=1) | Q(food__user=user.id))
+                contains = FoodContain.objects.filter(Q(food__user=1) | Q(food__user=user.id)).values('food').annotate(dcount=Count('food'))
             else:
-                contains = FoodContain.objects.filter(Q(food__user=1) | Q(food__user=user.id), food_category=category)
+                contains = FoodContain.objects.filter(Q(food__user=1) | Q(food__user=user.id), food_category=category).values('food').annotate(dcount=Count('food'))
 
             for contain in contains:
+                list_category = []
+                food = Food.objects.get(id=contain['food'])
+                categories = FoodContain.objects.filter(food=food.id)
+                for c in categories:
+                    list_category.append(c.food_category.name)
+
                 results.append({
-                    'id': contain.food.id, 
-                    'name': contain.food.name, 
-                    'calorie': contain.food.calorie, 
-                    'fat': contain.food.fat, 
-                    'protein': contain.food.protein, 
-                    'carbohydrate': contain.food.carbohydrate
+                    'id': food.id,
+                    'name': food.name,
+                    'calorie': food.calorie,
+                    'fat': food.fat,
+                    'protein': food.protein,
+                    'carbohydrate': food.carbohydrate,
+                    'categories': list_category
                 })
 
         elif category == 0:
             results = []
             foods = Food.objects.annotate(lower_name=Lower("name")).filter(Q(user=1) | Q(user=user.id), lower_name__contains=name.lower())
             for food in foods[offset:limit]:
+                list_category = []
+                categories = FoodContain.objects.filter(food=food.id)
+                for c in categories:
+                    list_category.append(c.food_category.name)
+
                 results.append({
                     'id': food.id, 
                     'name': food.name, 
                     'calorie': food.calorie, 
                     'fat': food.fat, 
                     'protein': food.protein, 
-                    'carbohydrate': food.carbohydrate
+                    'carbohydrate': food.carbohydrate,
+                    'categories': list_category
                 })
 
         else:
             results = []
-            contains = FoodContain.objects.annotate(lower_name=Lower("food__name")).filter(Q(food__user=1) | Q(food__user=user.id), lower_name__contains=name.lower(), food_category=category)
+            contains = FoodContain.objects.annotate(lower_name=Lower("food__name")).filter(Q(food__user=1) | Q(food__user=user.id), lower_name__contains=name.lower(), food_category=category).values('food').annotate(dcount=Count('food'))
             for contain in contains[offset:limit]:
+                list_category = []
+                food = Food.objects.get(id=contain['food'])
+                categories = FoodContain.objects.filter(food=food.id)
+                for c in categories:
+                    list_category.append(c.food_category.name)
+
                 results.append({
-                    'id': contain.food.id, 
-                    'name': contain.food.name, 
-                    'calorie': contain.food.calorie, 
-                    'fat': contain.food.fat, 
-                    'protein': contain.food.protein, 
-                    'carbohydrate': contain.food.carbohydrate
+                    'id': food.id,
+                    'name': food.name,
+                    'calorie': food.calorie,
+                    'fat': food.fat,
+                    'protein': food.protein,
+                    'carbohydrate': food.carbohydrate,
+                    'categories': list_category
                 })
 
         return JsonResponse({"results": {

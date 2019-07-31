@@ -27,7 +27,6 @@ def api_member_activity(request):
             "activity": list(activity)
         }})
 
-
     if request.method == "POST":
         json_request = json.loads(request.body)
         activity_label = json_request["label"]
@@ -103,6 +102,18 @@ def api_member_activity(request):
                 magnitude_sqrt=data[55],
                 requested_at=requested_at
             )
+
+        return JsonResponse({"message": "Success"})
+
+    if request.method == "DELETE":
+        json_request = json.loads(request.body)
+        label = json_request["label"]
+        requested_at = json_request["requested_at"]
+
+        activities = Activity.objects.filter(user=user, label=ActivityLabel.objects.get(id=label), requested_at=requested_at)
+        for activity in activities:
+            activity.deleted_at = datetime.now()
+            activity.save()
 
         return JsonResponse({"message": "Success"})
 

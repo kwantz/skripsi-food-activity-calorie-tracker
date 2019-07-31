@@ -14,6 +14,19 @@ def api_member_article(request):
         articles = articles.annotate(published_on=F('created_at')) \
             .values('id', 'title', 'author', 'content', 'image', 'published_on')[offset:limit]
 
+        results = []
+        for article in articles:
+            view = ArticleView.objects.filter(article=article)
+            results.append({
+                "id": article['id'],
+                "title": article['title'],
+                "author": article['author'],
+                "content": article["content"],
+                "image": article["image"],
+                "published_on": article["published_on"],
+                "view": len(view)
+            })
+
         return JsonResponse({"results": {
             "articles": list(articles),
         }})

@@ -71,11 +71,11 @@ def api_member_user_detail(request):
             if not bcrypt.checkpw(input_old_password.encode("utf-8"), hashed):
                 return JsonResponse({"message": "Wrong Current Password"})
 
-            if input_re_password != input_password:
-                return JsonResponse({"message": "New Password and Confirm New Password should be same"})
-
-            if input_re_password != input_old_password:
+            if input_password == input_old_password:
                 return JsonResponse({"message": "New Password can’t be same with current"})
+
+            if input_password != input_re_password:
+                return JsonResponse({"message": "New Password and Confirm New Password should be same"})
 
             input_password = bcrypt.hashpw(json_request["password"].encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 

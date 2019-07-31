@@ -2,7 +2,7 @@ import json
 from fact.models import Article
 from fact.libraries.jwt import JWT
 from django.http import JsonResponse
-from django.db.models import F
+from django.db.models import F, Q
 from django.db.models.functions import Lower
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime

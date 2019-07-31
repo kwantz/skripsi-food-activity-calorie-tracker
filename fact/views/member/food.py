@@ -95,6 +95,11 @@ def api_member_food(request):
 
     if request.method == "POST":
         json_request = json.loads(request.body)
+        have_data = Food.objects.annotate(lower_name=Lower("name")).filter(lower_name__exact=json_request["name"].lower()).values('id', 'name')
+
+        if len(have_data) > 0:
+            return JsonResponse({"message": json_request["name"] + " is already available.", "debug": list(have_data)},status=400)
+
         Food.objects.create(
             user=user,
             fat=json_request["fat"],
@@ -102,7 +107,7 @@ def api_member_food(request):
             calorie=json_request["calorie"],
             protein=json_request["protein"],
             carbohydrate=json_request["carbohydrate"],
-            food_category=FoodCategory.objects.get(id=json_request["category"]),
+            food_category=FoodCategory.objects.get(id=1),
         )
 
         return JsonResponse({"message": "Success"})

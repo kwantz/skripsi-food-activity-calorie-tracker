@@ -87,4 +87,3 @@ def clasify_activity_factor(pal):
 
     else:
         return "High"
-

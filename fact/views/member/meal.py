@@ -57,6 +57,11 @@ def api_member_meal(request):
 
     if request.method == "POST":
         json_request = json.loads(request.body)
+        have_data = Meal.objects.annotate(lower_name=Lower("name")).filter(lower_name__exact=json_request["name"].lower()).values('id', 'name')
+
+        if len(have_data) > 0:
+            return JsonResponse({"message": json_request["name"] + " is already available.", "debug": list(have_data)},status=400)
+
         meal = Meal.objects.create(
             user=user,
             name=json_request["name"]

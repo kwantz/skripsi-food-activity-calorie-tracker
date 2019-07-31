@@ -7,6 +7,7 @@ from datetime import datetime
 from math import ceil
 from fact.libraries.jwt import JWT
 from django.db.models import F, Count
+from django.db.models import F, Q
 
 
 @csrf_exempt
@@ -21,7 +22,7 @@ def api_member_activity_label(request):
         status = request.GET.get("status", "new")
 
         contain = []
-        activities = Activity.objects.filter(user=user).values('label').annotate(total=Count('label')).order_by('label')
+        activities = Activity.objects.filter(Q(user=1) | Q(user=user.id)).values('label').annotate(total=Count('label')).order_by('label')
         for activity in activities:
             contain.append(activity['label'])
 

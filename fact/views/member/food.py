@@ -100,13 +100,17 @@ def api_member_food(request):
         if len(have_data) > 0:
             return JsonResponse({"message": json_request["name"] + " is already available.", "debug": list(have_data)},status=400)
 
-        Food.objects.create(
+        food = Food.objects.create(
             user=user,
             fat=json_request["fat"],
             name=json_request["name"],
             calorie=json_request["calorie"],
             protein=json_request["protein"],
             carbohydrate=json_request["carbohydrate"],
+        )
+
+        FoodContain.objects.create(
+            food=food,
             food_category=FoodCategory.objects.get(id=1),
         )
 

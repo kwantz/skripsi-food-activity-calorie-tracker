@@ -95,16 +95,16 @@ def api_member_diary(request):
 
             if calorie.eat_time.id == 1:
                 intake["breakfast"].append(data)
-                total_breakfast += total_calorie
+                total_breakfast += (total_calorie * calorie.qty)
             elif calorie.eat_time.id == 2:
                 intake["lunch"].append(data)
-                total_lunch += total_calorie
+                total_lunch += (total_calorie * calorie.qty)
             elif calorie.eat_time.id == 3:
                 intake["dinner"].append(data)
-                total_dinner += total_calorie
+                total_dinner += (total_calorie * calorie.qty)
             elif calorie.eat_time.id == 4:
                 intake["snack"].append(data)
-                total_snack += total_calorie
+                total_snack += (total_calorie * calorie.qty)
 
             total_calorie_intake += (total_calorie * calorie.qty)
 

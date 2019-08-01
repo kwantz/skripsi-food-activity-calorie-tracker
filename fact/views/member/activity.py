@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.db.models import F, Count
 from django.db.models.functions import Lower
 from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime
+from datetime import datetime, timedelta
 from math import ceil
 from django.utils.dateparse import parse_datetime
 import dateutil.parser
@@ -111,7 +111,10 @@ def api_member_activity(request):
         label = json_request["label"]
         requested_at = json_request["requested_at"]
 
-        activities = Activity.objects.filter(user=user, label=ActivityLabel.objects.get(id=label), requested_at=dateutil.parser.parse(requested_at))
+        date_start = dateutil.parser.parse(requested_at) - timedelta(seconds=1)
+        date_end = dateutil.parser.parse(requested_at) + timedelta(seconds=1)
+
+        activities = Activity.objects.filter(user=user, label=ActivityLabel.objects.get(id=label), requested_at__gte=date_start, requested_at__lte=date_end)
         for activity in activities:
             activity.deleted_at = datetime.now()
             activity.save()

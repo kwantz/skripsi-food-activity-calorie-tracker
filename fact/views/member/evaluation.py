@@ -24,10 +24,16 @@ def api_member_evaluation(request):
             calorie_burnt = CalorieBurnt.objects.filter(user=user, created_at__gte=date_start, created_at__lte=date_end, deleted_at__isnull=True)
 
             month_calorie = 0
+            total_duration = 0
             for calorie in calorie_burnt:
                 month_calorie += calorie.activity_label.met * user.weight * calorie.duration / 3600
+                total_duration += calorie.duration
 
-            total_calorie += (month_calorie / len(calorie_burnt))
+            if total_duration / (24 * 3600) >= 24:
+                sitting = ((24 * 3600) - (total_duration / (24 * 3600))) * user.weight
+                total_calorie += sitting
+
+            total_calorie += (month_calorie / 24)
 
         total_calorie = (total_calorie / 30)
 

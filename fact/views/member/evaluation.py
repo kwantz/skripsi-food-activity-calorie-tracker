@@ -39,6 +39,13 @@ def api_member_evaluation(request):
 
         result = clasify_activity_factor(total_calorie)
 
+        tdee = total_calorie * calculate_bmr(user)
+        # ActivityLevel.objects.create(
+        #     level=result,
+        #     tdee=tdee,
+        #     user=user
+        # )
+
         return JsonResponse({
             "results": clasify_bmi(user)
         })

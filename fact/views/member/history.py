@@ -117,14 +117,18 @@ def api_member_history_burnt(request):
         total_calorie_burnt = activity_level.tdee
 
         dist_activity_level = {}
+        dist_activity_month = {}
 
         for i in range(30):
             date_start = datetime.combine(today + timedelta((i + 0) * -1), time())
             date_end = datetime.combine(today + timedelta((i - 1) * -1), time())
             calorie_burnt = CalorieBurnt.objects.filter(user=user, created_at__gte=date_start, created_at__lte=date_end, deleted_at__isnull=True)
 
+            datestr = date_start.strftime('%Y-%m-%d')
+            if datestr not in dist_activity_month:
+                dist_activity_month[datestr] = 0
+
             if i < 7:
-                datestr = date_start.strftime('%Y-%m-%d')
                 if datestr not in dist_activity_level:
                     dist_activity_level[datestr] = 0
 
@@ -132,6 +136,10 @@ def api_member_history_burnt(request):
                 for calorie in calorie_burnt:
                     week_calorie_result[i] += calorie.activity_label.met * user.weight * calorie.duration / 3600
                     dist_activity_level[datestr] += calorie.duration
+                    dist_activity_month[datestr] += calorie.duration
+            else:
+                for calorie in calorie_burnt:
+                    dist_activity_month[datestr] += calorie.duration
 
             month_calorie = 0
             for calorie in calorie_burnt:
@@ -148,7 +156,11 @@ def api_member_history_burnt(request):
         for key, val in dist_activity_level.items():
             list_activity_level.append((val, key))
 
-        list_activity_level.sort(reverse=True)
+        list_activity_month = []
+        for key, val in dist_activity_month.items():
+            list_activity_month.append((val, key))
+
+        list_activity_month.sort(reverse=True)
 
         week_calorie_result = list(reversed(week_calorie_result))
         return JsonResponse({"results": {
@@ -158,6 +170,7 @@ def api_member_history_burnt(request):
             # "least_active":
             "most_active": list(calorie_burnt_month),
             "activity_level": list_activity_level,
+            "activity_month": list_activity_month,
             "level": activity_level.level
         }})
 

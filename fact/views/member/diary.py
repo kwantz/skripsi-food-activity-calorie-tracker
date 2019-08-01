@@ -196,8 +196,7 @@ def api_member_diary(request):
                 "nutrient": nutrient,
                 "recommendation_calorie": recommendation_calorie,
                 "recommendation_activity": recommendation_activity,
-                "activity": [len(list(activity_1)), len(list(activity_2)), len(list(activity_3))],
-                "total_breakfast": total_breakfast
+                "activity": [len(list(activity_1)), len(list(activity_2)), len(list(activity_3))]
             }
         })
 

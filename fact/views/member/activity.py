@@ -115,6 +115,6 @@ def api_member_activity(request):
             activity.deleted_at = datetime.now()
             activity.save()
 
-        return JsonResponse({"message": "Success", "dump": activities.tolist()})
+        return JsonResponse({"message": "Success", "dump": activities.values('id').tolist()})
 
     return JsonResponse({"message": "Not Found"}, status=404)

@@ -137,7 +137,7 @@ def api_forgot_password(request):
             return JsonResponse({"message": "Success"}, status=200)
 
         except ObjectDoesNotExist:
-            return JsonResponse({"message": "Invalid Email"}, status=200)
+ac            return JsonResponse({"message": "Invalid Email"}, status=200)
 
     return JsonResponse({"message": "Not Found"}, status=404)
 

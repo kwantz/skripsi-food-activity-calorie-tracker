@@ -4,7 +4,7 @@ from django.db.models import F, Sum
 from fact.libraries.jwt import JWT
 from fact.libraries.body import clasify_activity_factor
 from datetime import datetime, timedelta, time, date
-from fact.libraries.body import calculate_bmr
+from fact.libraries.body import calculate_bmr, clasify_bmi
 
 
 def api_member_evaluation(request):
@@ -38,8 +38,9 @@ def api_member_evaluation(request):
         total_calorie = (total_calorie / 30)
 
         result = clasify_activity_factor(total_calorie)
+
         return JsonResponse({
-            "results": result
+            "results": clasify_bmi(user)
         })
     
     return JsonResponse({"message": "Not Found"}, status=404)

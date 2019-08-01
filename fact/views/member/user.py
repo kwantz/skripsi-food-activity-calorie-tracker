@@ -89,6 +89,8 @@ def api_member_user_detail(request):
         user.gender = gender
         user.birth_year = input_birth_year
         user.password = input_password
+        user.confirm_email = None
+        user.forgot_password = None
         user.save()
 
         return JsonResponse({"message": "Success"})

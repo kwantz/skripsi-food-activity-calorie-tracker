@@ -95,12 +95,11 @@ def api_confirm_email(request, confirm_email):
     if request.method == "POST":
         try:
             user = User.objects.get(confirm_email=confirm_email)
-            user.confirm_email = None
-            user.save()
 
             return JsonResponse({"results": {
                 "role": user.role.id,
                 "name": user.name,
+                "email": user.email,
                 "token": JWT().encode({
                     "id": user.id,
                     "name": user.name,
@@ -138,6 +137,22 @@ def api_forgot_password(request):
 
         except ObjectDoesNotExist:
             return JsonResponse({"message": "Invalid Email"}, status=200)
+
+    return JsonResponse({"message": "Not Found"}, status=404)
+
+
+@csrf_exempt
+def api_confirm_forgot_password(request, forgot_password):
+    if request.method == "POST":
+        try:
+            user = User.objects.get(forgot_password=forgot_password)
+
+            return JsonResponse({"results": {
+                "email": user.email
+            }})
+
+        except ObjectDoesNotExist:
+            return JsonResponse({"message": "Invalid Email"}, status=400)
 
     return JsonResponse({"message": "Not Found"}, status=404)
 

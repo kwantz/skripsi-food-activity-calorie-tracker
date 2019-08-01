@@ -10,6 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 from math import ceil
 from django.utils.dateparse import parse_datetime
+import dateutil.parser
 
 
 @csrf_exempt
@@ -110,7 +111,7 @@ def api_member_activity(request):
         label = json_request["label"]
         requested_at = json_request["requested_at"]
 
-        activities = Activity.objects.filter(user=user, label=ActivityLabel.objects.get(id=label), requested_at=requested_at)
+        activities = Activity.objects.filter(user=user, label=ActivityLabel.objects.get(id=label), requested_at=dateutil.parser.parse(requested_at))
         for activity in activities:
             activity.deleted_at = datetime.now()
             activity.save()

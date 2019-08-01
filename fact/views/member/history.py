@@ -124,14 +124,13 @@ def api_member_history_burnt(request):
             calorie_burnt = CalorieBurnt.objects.filter(user=user, created_at__gte=date_start, created_at__lte=date_end, deleted_at__isnull=True)
 
             if i < 7:
-                print(date_start, date_end)
+                datestr = date_start.strftime('%Y-%m-%d')
+                if datestr not in dist_activity_level:
+                    dist_activity_level[datestr] = 0
+
                 week_calorie_result.append(0)
                 for calorie in calorie_burnt:
                     week_calorie_result[i] += calorie.activity_label.met * user.weight * calorie.duration / 3600
-
-                    datestr = calorie.created_at.strftime('%Y-%m-%d')
-                    if datestr not in dist_activity_level:
-                        dist_activity_level[datestr] = 0
                     dist_activity_level[datestr] += calorie.duration
 
             month_calorie = 0

@@ -119,6 +119,6 @@ def api_member_activity(request):
             activity.deleted_at = datetime.now()
             activity.save()
 
-        return JsonResponse({"status": activities.query.__str__(), "message": "Success", "dump": list(activities.values('id')), "time_1": requested_at, "time_2": dateutil.parser.parse(requested_at)})
+        return JsonResponse({"message": "Success"})
 
     return JsonResponse({"message": "Not Found"}, status=404)

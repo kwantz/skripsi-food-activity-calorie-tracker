@@ -55,7 +55,7 @@ class Features:
             math.sqrt(sqd_error.mean())
         ]
 
-    def hidden_windows(self, df, size=1000):
+    def hidden_windows(self, df, size=600):
         start = 0
         while start < df.count():
             yield start, start + size

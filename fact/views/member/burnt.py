@@ -67,7 +67,9 @@ def api_member_burnt(request):
         return JsonResponse({
             "results": results,
             "keys": keys,
-            "predict": predict
+            "predict": predict,
+            "len_1": len(data_test),
+            "len_2": len(predict)
         })
 
     if request.method == "DELETE":

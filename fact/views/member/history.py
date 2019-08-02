@@ -24,8 +24,8 @@ def api_member_history_intake(request):
         date_start_month = datetime.combine(month_ago, time())
         date_end = datetime.combine(today, time())
 
-        calorie_intake_week = CalorieIntake.objects.filter(user=user, created_at__gte=date_start_week, created_at__lte=date_end)
-        calorie_intake_month = CalorieIntake.objects.filter(user=user, created_at__gte=date_start_month, created_at__lte=date_end)
+        calorie_intake_week = CalorieIntake.objects.filter(user=user, created_at__gte=date_start_week, created_at__lt=date_end)
+        calorie_intake_month = CalorieIntake.objects.filter(user=user, created_at__gte=date_start_month, created_at__lt=date_end)
 
         dist_week_calorie = {}
         dist_month_calorie = {}
@@ -46,7 +46,7 @@ def api_member_history_intake(request):
         for i in range(30):
             date_start = datetime.combine(today + timedelta((i + 0) * -1), time())
             date_end = datetime.combine(today + timedelta((i - 1) * -1), time())
-            calorie_intake = CalorieIntake.objects.filter(user=user, created_at__gte=date_start, created_at__lte=date_end)
+            calorie_intake = CalorieIntake.objects.filter(user=user, created_at__gte=date_start, created_at__lt=date_end)
 
             if i < 7:
                 print(date_start, date_end)
@@ -102,8 +102,8 @@ def api_member_history_burnt(request):
         date_start_month = datetime.combine(month_ago, time())
         date_end = datetime.combine(today, time())
 
-        calorie_burnt_week = CalorieBurnt.objects.filter(user=user, created_at__gte=date_start_week, created_at__lte=date_end, deleted_at__isnull=True)
-        calorie_burnt_month = CalorieBurnt.objects.filter(user=user, created_at__gte=date_start_month, created_at__lte=datetime.combine(today + timedelta(1), time()), deleted_at__isnull=True).values('activity_label__name').annotate(duration = Sum('duration')).order_by('-duration')
+        calorie_burnt_week = CalorieBurnt.objects.filter(user=user, created_at__gte=date_start_week, created_at__lt=date_end, deleted_at__isnull=True)
+        calorie_burnt_month = CalorieBurnt.objects.filter(user=user, created_at__gte=date_start_month, created_at__lt=datetime.combine(today + timedelta(1), time()), deleted_at__isnull=True).values('activity_label__name').annotate(duration = Sum('duration')).order_by('-duration')
 
         dist_week_calorie = {}
         dist_month_calorie = {}
@@ -122,7 +122,7 @@ def api_member_history_burnt(request):
         for i in range(30):
             date_start = datetime.combine(today + timedelta((i + 0) * -1), time())
             date_end = datetime.combine(today + timedelta((i - 1) * -1), time())
-            calorie_burnt = CalorieBurnt.objects.filter(user=user, created_at__gte=date_start, created_at__lte=date_end, deleted_at__isnull=True)
+            calorie_burnt = CalorieBurnt.objects.filter(user=user, created_at__gte=date_start, created_at__lt=date_end, deleted_at__isnull=True)
 
             datestr = date_start.strftime('%Y-%m-%d')
             if datestr not in dist_activity_month:

@@ -16,7 +16,7 @@ def api_member_article(request):
 
         results = []
         for article in articles:
-            view = ArticleView.objects.filter(article=article)
+            # view = ArticleView.objects.filter(article=article)
             results.append({
                 "id": article['id'],
                 "title": article['title'],
@@ -24,7 +24,7 @@ def api_member_article(request):
                 "content": article["content"],
                 "image": article["image"],
                 "published_on": article["published_on"],
-                "view": len(view)
+                # "view": len(view)
             })
 
         return JsonResponse({"results": {

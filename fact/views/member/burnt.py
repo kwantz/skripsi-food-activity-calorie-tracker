@@ -65,7 +65,8 @@ def api_member_burnt(request):
                 })
 
         return JsonResponse({
-            "results": results
+            "results": results,
+            "keys": keys,
         })
 
     if request.method == "DELETE":

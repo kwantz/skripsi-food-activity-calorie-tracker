@@ -200,7 +200,8 @@ def api_member_diary(request):
                 "tanggal": {
                     "today": today,
                     "date_start": date_start,
-                    "date_end": date_end
+                    "date_end": date_end,
+                    "sql": calorie_intake.query.__str__()
                 }
             }
         })

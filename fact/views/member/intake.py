@@ -48,7 +48,7 @@ def api_member_intake_food(request):
             qty=json_request.get("qty", 1),
             food=Food.objects.get(id=json_request["id"]),
             eat_time=EatTime.objects.get(id=json_request["category_intake"]),
-            created_at=today
+            created_at=datetime.combine(today, time())
         )
 
         return JsonResponse({"message": "Success"})
